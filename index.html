@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<head>
+	<title>Surrounded</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<!-- Resets all default browser stylings for a clean slate -->
+    <link rel="stylesheet" href="css/reset_author_richard_clark.css">
+    <!-- Styles specific to the Encryptor pages -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Inluding the JQuery Library -->
+    <script type="text/javascript" src="js/external/jquery-1.11.2.js"></script>
+    <!-- WebGL wrapper library -->
+	<script src="js/external/three.js"></script>
+	<!-- Allows for keyboard listeners -->
+	<script src="js/external/threex.keyboardstate.js"></script>
+	<!-- Necessary for Canvas to work -->
+	<script src="js/external/Projector.js"></script>
+	<!-- Canvas library -->
+	<script src="js/external/CanvasRenderer.js"></script>
+	<script>
+		var scene, camera, renderer, keyboard, WIDTH, HEIGHT, Key;
+		var updateCounter = 0;
+		var criticalVariables = [];
+		function init()
+		{
+			WIDTH = window.innerWidth * 0.99;
+			HEIGHT = window.innerHeight * 0.99;
+			/*************************************************************************/
+			keyboard = new THREEx.KeyboardState();
+			/*************************************************************************/
+			scene = new THREE.Scene();	// Three.js scene (contains universe).
+			/*************************************************************************/
+			createRenderers();			// Creates all renderers for the scene.
+			/*************************************************************************/
+			scene.add(new THREE.AmbientLight(0x333333));
+			/*************************************************************************/
+			registerListeners();		// Registers all Event Listeners.
+			/*************************************************************************/
+			attachViewsToHTML();		// Attaches renderers to HTML.
+			/*************************************************************************/
+			loadCameras();				// Establishes all of the viewpoints.
+			/*************************************************************************/
+			createPlayerCenter();
+			/*************************************************************************/
+			render();					// Activates the update loop.
+		}
+		function createRenderers()
+		{
+			if(window.WebGLRenderingContext)
+			{
+				renderer = new THREE.WebGLRenderer();
+			    console.log("This browser supports WebGL");
+			}
+			else
+			{
+			    renderer = new THREE.CanvasRenderer();
+			    console.log("This browser doesn't support WebGL");
+			}
+			renderer.setClearColor( 0x000000, 0 );
+			renderer.setSize( WIDTH, HEIGHT );
+			renderer.autoClear = false;
+		}
+		function registerListeners()
+		{
+			// Resizes Three.js, HTML, and CSS elements with a change in window size.
+			window.addEventListener( 'resize', onWindowResize, false);
+		}
+		function attachViewsToHTML()
+		{
+			// Contains player's POV.
+			var container = document.getElementById("mainview");
+			container.appendChild( renderer.domElement );
+		}
+		function createPlayerCenter()
+		{
+			var circleGeo = new THREE.CylinderGeometry(1, 1, 1);
+			var circleMat = new THREE.MeshBasicMaterial({color: 'white'});
+			var circle = new THREE.Mesh(circleGeo, circleMat);
+			criticalVariables.push(circle);
+			scene.add(circle);
+		}
+		function loadCameras()
+		{
+			// Top-down view.
+			camera =  new THREE.PerspectiveCamera( 45, WIDTH / HEIGHT, 0.01, 1000 );
+			camera.position.set(0, 20, 0);
+			camera.lookAt(scene.position);
+		}
+		// The update loop.
+		function render()
+		{
+			updateCounter++;
+			// Player presses a keyboard key.
+			keyPressed();
+			renderer.render( scene, camera );
+			requestAnimationFrame( render );
+		}
+		// Resizes Three.js, HTML, and CSS elements with a change in window size.
+		function onWindowResize()
+		{
+			WIDTH = window.innerWidth * 0.99;
+			HEIGHT = window.innerHeight * 0.99;
+			renderer.setSize( WIDTH, HEIGHT );
+			camera.aspect = WIDTH / HEIGHT;
+			camera.updateProjectionMatrix();
+		}
+		function keyPressed()
+		{
+			// Simultaneous press of S W & D, or UP & RIGHT
+			if( keyboard.pressed("RIGHT") || keyboard.pressed("D") )
+			{
+				for(var i = 0; i < criticalVariables.length; i++)
+				{
+					criticalVariables[i].rotation.y -= 0.1;
+				}
+			}
+			else if( keyboard.pressed("LEFT") || keyboard.pressed("A") )
+			{
+				for(var i = 0; i < criticalVariables.length; i++)
+				{
+					criticalVariables[i].rotation.y += 0.1;
+				}
+			}
+		}
+	</script>
+</head>
+<body>
+
+	<div id="mainview"></div>
+
+</body>
+<script>window.onload = init;</script>
+</html>

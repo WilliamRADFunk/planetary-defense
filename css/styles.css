@@ -1,0 +1,16 @@
+body
+{
+	font-family: Arial;
+	margin: auto auto;
+	position: relative;
+	width: 100%;
+}
+#mainview
+{
+	display: block;
+	position: absolute;
+	height: 100%;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+}
