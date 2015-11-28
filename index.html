@@ -17,132 +17,190 @@
 	<!-- Canvas library -->
 	<script src="js/external/CanvasRenderer.js"></script>
 	<script>
-		var scene, camera, renderer, keyboard, WIDTH, HEIGHT, Key;
-		var updateCounter = 0, ring = 1, RINGMAX = 3;
-		var ringChange = false;
-		var criticalVariables = [];
+
+		var GAME = GAME || {
+			updateCounter: 0,
+			ring: 1,
+			RINGMAX: 3,
+			ringChange: false,
+			criticalVariables: [],
+			asteroids: {
+				asteroidField: [],
+
+				createField: function()
+				{
+
+				},
+				addAsteroid: function(asteroid)
+				{
+					asteroidField.push(asteroid);
+				},
+				checkOutOfBounds: function()
+				{
+					for(var i = 0; i < this.asteroidField.length; i++)
+					{
+						if(asteroidField[i].position.x < -20 || asteroidField[i].position.x > 20) this.removeAsteroid(i);
+						else if(asteroidField[i].position.z < -20 || asteroidField[i].position.z > 20) this.removeAsteroid(i);
+					}
+				},
+				removeAsteroid: function(asteroid)
+				{
+					this.asteroidField.splice(asteroid, 1);
+				}
+			},
+
+			createRenderers: function()
+			{
+				if(window.WebGLRenderingContext) this.renderer = new THREE.WebGLRenderer();
+				else this.renderer = new THREE.CanvasRenderer();
+				this.renderer.setClearColor( 0x000000, 0 );
+				this.renderer.setSize( this.WIDTH, this.HEIGHT );
+				this.renderer.autoClear = false;
+			},
+			attachViewsToHTML: function()
+			{
+				var container = document.getElementById("mainview");
+				container.appendChild( GAME.renderer.domElement );
+			},
+			createPlayerCenter: function()
+			{
+				var circleGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.1);
+				var circleMat = new THREE.MeshBasicMaterial({color: 'white'});
+				var circle = new THREE.Mesh(circleGeo, circleMat);
+				circle.name = "Player";
+				this.criticalVariables.push(circle);
+				this.scene.add(circle);
+			},
+			createRingsAndBarriers: function()
+			{
+				for(var j = 1; j < this.RINGMAX+1; j++)
+				{
+					var ring = new THREE.Object3D();
+					ring.name = "Ring " + j;
+					for(var i = 0; i < (4 * j); i++)
+					{
+						x_coord = (j * 2) * Math.cos( i * (Math.PI / (2 * j)) );
+						z_coord = (j * 2) * Math.sin( i * (Math.PI / (2 * j)) );
+
+						var barrierGeo = new THREE.BoxGeometry(1, 1, 1);
+						var barrierMat = new THREE.MeshBasicMaterial({color: 'green'});
+						var barrier = new THREE.Mesh(barrierGeo, barrierMat);
+						barrier.position.set(x_coord, 0, z_coord);
+						barrier.name = "Barrier " + j + "-" + i;
+						ring.add(barrier);
+					}
+					this.criticalVariables.push(ring);
+					this.scene.add(ring);
+				}
+			},
+			registerListeners: function()
+			{
+				window.addEventListener( 'resize', this.onWindowResize, false);
+			},
+			onWindowResize: function()
+			{
+				this.WIDTH = window.innerWidth * 0.99;
+				this.HEIGHT = window.innerHeight * 0.99;
+				this.renderer.setSize( this.WIDTH, this.HEIGHT );
+				this.camera.aspect = this.WIDTH / this.HEIGHT;
+				this.camera.updateProjectionMatrix();
+			},
+			loadCameras: function()
+			{
+				this.camera =  new THREE.PerspectiveCamera( 45, this.WIDTH / this.HEIGHT, 0.01, 1000 );
+				this.camera.position.set(0, 40, 0);
+				this.camera.lookAt(this.scene.position);
+			}
+		};
+		var Asteroid = function(size, speed, direction) {
+			this.size = size || 0.2;
+			this.speed = speed || 0.1;
+			this.direction = direction;
+		};
+		var asteroids = {
+			asteroidField: [],
+
+			createField: function()
+			{
+
+			},
+			addAsteroid: function(asteroid)
+			{
+				asteroidField.push(asteroid);
+			},
+			checkOutOfBounds: function()
+			{
+				for(var i = 0; i < this.asteroidField.length; i++)
+				{
+					if(asteroidField[i].position.x < -20 || asteroidField[i].position.x > 20) this.removeAsteroid(i);
+					else if(asteroidField[i].position.z < -20 || asteroidField[i].position.z > 20) this.removeAsteroid(i);
+				}
+			},
+			removeAsteroid: function(asteroid)
+			{
+				this.asteroidField.splice(asteroid, 1);
+			}
+		};
 		function init()
 		{
-			WIDTH = window.innerWidth * 0.99;
-			HEIGHT = window.innerHeight * 0.99;
+			GAME.WIDTH = window.innerWidth * 0.99;
+			GAME.HEIGHT = window.innerHeight * 0.99;
 			/*************************************************************************/
-			keyboard = new THREEx.KeyboardState();
+			GAME.keyboard = new THREEx.KeyboardState();
 			/*************************************************************************/
-			scene = new THREE.Scene();	// Three.js scene (contains universe).
+			GAME.scene = new THREE.Scene();	// Three.js scene (contains universe).
 			/*************************************************************************/
-			createRenderers();			// Creates all renderers for the scene.
+			GAME.createRenderers();			// Creates all renderers for the scene.
 			/*************************************************************************/
-			scene.add(new THREE.AmbientLight(0x333333));
+			GAME.scene.add(new THREE.AmbientLight(0x333333));
 			/*************************************************************************/
-			attachViewsToHTML();		// Attaches renderers to HTML.
+			GAME.attachViewsToHTML();		// Attaches renderers to HTML.
 			/*************************************************************************/
-			loadCameras();				// Establishes all of the viewpoints.
+			GAME.createPlayerCenter();		// Creates the rotatable player's center.
 			/*************************************************************************/
-			createPlayerCenter();		// Creates the rotatable player's center.
+			GAME.createRingsAndBarriers();	// Creates player's defensive barriers.
 			/*************************************************************************/
-			createRingsAndBarriers();
+			GAME.registerListeners();		// Registers all Event Listeners.
 			/*************************************************************************/
-			registerListeners();		// Registers all Event Listeners.
+			GAME.loadCameras();				// Top-down viewpoint.
 			/*************************************************************************/
-			render();					// Activates the update loop.
+			GAME.asteroids.createField();	// Creates initial asteroid belt.
+			/*************************************************************************/
+			render();						// The update loop.
 		}
-		function createRenderers()
-		{
-			if(window.WebGLRenderingContext) renderer = new THREE.WebGLRenderer();
-			else renderer = new THREE.CanvasRenderer();
-			renderer.setClearColor( 0x000000, 0 );
-			renderer.setSize( WIDTH, HEIGHT );
-			renderer.autoClear = false;
-		}
-		function attachViewsToHTML()
-		{
-			var container = document.getElementById("mainview");
-			container.appendChild( renderer.domElement );
-		}
-		function createPlayerCenter()
-		{
-			var circleGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.1);
-			var circleMat = new THREE.MeshBasicMaterial({color: 'white'});
-			var circle = new THREE.Mesh(circleGeo, circleMat);
-			circle.name = "Player";
-			criticalVariables.push(circle);
-			scene.add(circle);
-		}
-		function createRingsAndBarriers()
-		{
-			for(var j = 1; j < RINGMAX+1; j++)
-			{
-				var ring = new THREE.Object3D();
-				ring.name = "Ring " + j;
-				for(var i = 0; i < (4 * j); i++)
-				{
-					x_coord = (j * 2) * Math.cos( i * (Math.PI / (2 * j)) );
-					z_coord = (j * 2) * Math.sin( i * (Math.PI / (2 * j)) );
-
-					var barrierGeo = new THREE.BoxGeometry(1, 1, 1);
-					var barrierMat = new THREE.MeshBasicMaterial({color: 'green'});
-					var barrier = new THREE.Mesh(barrierGeo, barrierMat);
-					barrier.position.set(x_coord, 0, z_coord);
-					barrier.name = "Barrier";
-					ring.add(barrier);
-				}
-				criticalVariables.push(ring);
-				scene.add(ring);
-			}
-		}
-		function registerListeners()
-		{
-			window.addEventListener( 'resize', onWindowResize, false);
-		}
-		function onWindowResize()
-		{
-			WIDTH = window.innerWidth * 0.99;
-			HEIGHT = window.innerHeight * 0.99;
-			renderer.setSize( WIDTH, HEIGHT );
-			camera.aspect = WIDTH / HEIGHT;
-			camera.updateProjectionMatrix();
-		}
-		function loadCameras()
-		{
-			// Top-down view.
-			camera =  new THREE.PerspectiveCamera( 45, WIDTH / HEIGHT, 0.01, 1000 );
-			camera.position.set(0, 40, 0);
-			camera.lookAt(scene.position);
-		}
-		// The update loop.
 		function render()
 		{
-			updateCounter++;
+			GAME.updateCounter++;
 			// Player presses a keyboard key.
 			keyPressed();
-			renderer.render( scene, camera );
+			GAME.renderer.render( GAME.scene, GAME.camera );
 			requestAnimationFrame( render );
 		}
 		function keyPressed()
 		{
 			// Simultaneous press of S W & D, or UP & RIGHT
-			if( keyboard.pressed("RIGHT") || keyboard.pressed("D") )
+			if( GAME.keyboard.pressed("RIGHT") || GAME.keyboard.pressed("D") )
 			{
-				criticalVariables[0].rotation.y -= 0.1; // player center.
-				criticalVariables[ring].rotation.y -= 0.1; // defensive center.
+				GAME.criticalVariables[0].rotation.y -= 0.1; // player center.
+				GAME.criticalVariables[GAME.ring].rotation.y -= (0.1 / GAME.ring); // defensive center.
 			}
-			else if( keyboard.pressed("LEFT") || keyboard.pressed("A") )
+			else if( GAME.keyboard.pressed("LEFT") || GAME.keyboard.pressed("A") )
 			{
-				criticalVariables[0].rotation.y += 0.1; // player center.
-				criticalVariables[ring].rotation.y += 0.1; // defensive center.
+				GAME.criticalVariables[0].rotation.y += 0.1; // player center.
+				GAME.criticalVariables[GAME.ring].rotation.y += (0.1 / GAME.ring); // defensive center.
 			}
-			else if( keyboard.pressed("SPACE") )
+			else if( GAME.keyboard.pressed("SPACE") )
 			{
-				if(!ringChange) // player chose a different ring to rotate.
+				if(!GAME.ringChange) // player chose a different ring to rotate.
 				{
-					ring++;
-					ringChange = true;
+					GAME.ring++;
+					GAME.ringChange = true;
 				}
-				if(ring > RINGMAX) ring = 1;
+				if(GAME.ring > GAME.RINGMAX) GAME.ring = 1;
 			}
 			else
 			{
-				ringChange = false;
+				GAME.ringChange = false;
 			}
 		}
 	</script>
