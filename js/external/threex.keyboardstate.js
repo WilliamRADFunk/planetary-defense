@@ -110,9 +110,9 @@ THREEx.KeyboardState.prototype._onKeyChange	= function(event)
  * @returns {Boolean} true if the key is pressed, false otherwise
 */
 THREEx.KeyboardState.prototype.pressed	= function(keyDesc){
-	var keys	= keyDesc.split("+");
+	var keys = keyDesc.split("+");
 	for(var i = 0; i < keys.length; i++){
-		var key		= keys[i]
+		var key = keys[i];
 		var pressed	= false
 		if( THREEx.KeyboardState.MODIFIERS.indexOf( key ) !== -1 ){
 			pressed	= this.modifiers[key];

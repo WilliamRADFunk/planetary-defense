@@ -18,7 +18,8 @@
 	<script src="js/external/CanvasRenderer.js"></script>
 	<script>
 		var scene, camera, renderer, keyboard, WIDTH, HEIGHT, Key;
-		var updateCounter = 0;
+		var updateCounter = 0, ring = 1, RINGMAX = 3;
+		var ringChange = false;
 		var criticalVariables = [];
 		function init()
 		{
@@ -33,56 +34,79 @@
 			/*************************************************************************/
 			scene.add(new THREE.AmbientLight(0x333333));
 			/*************************************************************************/
-			registerListeners();		// Registers all Event Listeners.
-			/*************************************************************************/
 			attachViewsToHTML();		// Attaches renderers to HTML.
 			/*************************************************************************/
 			loadCameras();				// Establishes all of the viewpoints.
 			/*************************************************************************/
-			createPlayerCenter();
+			createPlayerCenter();		// Creates the rotatable player's center.
+			/*************************************************************************/
+			createRingsAndBarriers();
+			/*************************************************************************/
+			registerListeners();		// Registers all Event Listeners.
 			/*************************************************************************/
 			render();					// Activates the update loop.
 		}
 		function createRenderers()
 		{
-			if(window.WebGLRenderingContext)
-			{
-				renderer = new THREE.WebGLRenderer();
-			    console.log("This browser supports WebGL");
-			}
-			else
-			{
-			    renderer = new THREE.CanvasRenderer();
-			    console.log("This browser doesn't support WebGL");
-			}
+			if(window.WebGLRenderingContext) renderer = new THREE.WebGLRenderer();
+			else renderer = new THREE.CanvasRenderer();
 			renderer.setClearColor( 0x000000, 0 );
 			renderer.setSize( WIDTH, HEIGHT );
 			renderer.autoClear = false;
 		}
-		function registerListeners()
-		{
-			// Resizes Three.js, HTML, and CSS elements with a change in window size.
-			window.addEventListener( 'resize', onWindowResize, false);
-		}
 		function attachViewsToHTML()
 		{
-			// Contains player's POV.
 			var container = document.getElementById("mainview");
 			container.appendChild( renderer.domElement );
 		}
 		function createPlayerCenter()
 		{
-			var circleGeo = new THREE.CylinderGeometry(1, 1, 1);
+			var circleGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.1);
 			var circleMat = new THREE.MeshBasicMaterial({color: 'white'});
 			var circle = new THREE.Mesh(circleGeo, circleMat);
+			circle.name = "Player";
 			criticalVariables.push(circle);
 			scene.add(circle);
+		}
+		function createRingsAndBarriers()
+		{
+			for(var j = 1; j < RINGMAX+1; j++)
+			{
+				var ring = new THREE.Object3D();
+				ring.name = "Ring " + j;
+				for(var i = 0; i < (4 * j); i++)
+				{
+					x_coord = (j * 2) * Math.cos( i * (Math.PI / (2 * j)) );
+					z_coord = (j * 2) * Math.sin( i * (Math.PI / (2 * j)) );
+
+					var barrierGeo = new THREE.BoxGeometry(1, 1, 1);
+					var barrierMat = new THREE.MeshBasicMaterial({color: 'green'});
+					var barrier = new THREE.Mesh(barrierGeo, barrierMat);
+					barrier.position.set(x_coord, 0, z_coord);
+					barrier.name = "Barrier";
+					ring.add(barrier);
+				}
+				criticalVariables.push(ring);
+				scene.add(ring);
+			}
+		}
+		function registerListeners()
+		{
+			window.addEventListener( 'resize', onWindowResize, false);
+		}
+		function onWindowResize()
+		{
+			WIDTH = window.innerWidth * 0.99;
+			HEIGHT = window.innerHeight * 0.99;
+			renderer.setSize( WIDTH, HEIGHT );
+			camera.aspect = WIDTH / HEIGHT;
+			camera.updateProjectionMatrix();
 		}
 		function loadCameras()
 		{
 			// Top-down view.
 			camera =  new THREE.PerspectiveCamera( 45, WIDTH / HEIGHT, 0.01, 1000 );
-			camera.position.set(0, 20, 0);
+			camera.position.set(0, 40, 0);
 			camera.lookAt(scene.position);
 		}
 		// The update loop.
@@ -94,39 +118,35 @@
 			renderer.render( scene, camera );
 			requestAnimationFrame( render );
 		}
-		// Resizes Three.js, HTML, and CSS elements with a change in window size.
-		function onWindowResize()
-		{
-			WIDTH = window.innerWidth * 0.99;
-			HEIGHT = window.innerHeight * 0.99;
-			renderer.setSize( WIDTH, HEIGHT );
-			camera.aspect = WIDTH / HEIGHT;
-			camera.updateProjectionMatrix();
-		}
 		function keyPressed()
 		{
 			// Simultaneous press of S W & D, or UP & RIGHT
 			if( keyboard.pressed("RIGHT") || keyboard.pressed("D") )
 			{
-				for(var i = 0; i < criticalVariables.length; i++)
-				{
-					criticalVariables[i].rotation.y -= 0.1;
-				}
+				criticalVariables[0].rotation.y -= 0.1; // player center.
+				criticalVariables[ring].rotation.y -= 0.1; // defensive center.
 			}
 			else if( keyboard.pressed("LEFT") || keyboard.pressed("A") )
 			{
-				for(var i = 0; i < criticalVariables.length; i++)
+				criticalVariables[0].rotation.y += 0.1; // player center.
+				criticalVariables[ring].rotation.y += 0.1; // defensive center.
+			}
+			else if( keyboard.pressed("SPACE") )
+			{
+				if(!ringChange) // player chose a different ring to rotate.
 				{
-					criticalVariables[i].rotation.y += 0.1;
+					ring++;
+					ringChange = true;
 				}
+				if(ring > RINGMAX) ring = 1;
+			}
+			else
+			{
+				ringChange = false;
 			}
 		}
 	</script>
 </head>
-<body>
-
-	<div id="mainview"></div>
-
-</body>
+<body><div id="mainview"></div></body>
 <script>window.onload = init;</script>
 </html>
