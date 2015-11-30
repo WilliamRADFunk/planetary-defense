@@ -20,6 +20,7 @@
 
 		var GAME = GAME || {
 			updateCounter: 0,
+			mainSpeed: 0.001,
 			ring: 1,
 			RINGMAX: 3,
 			ringChange: false,
@@ -29,23 +30,43 @@
 
 				createField: function()
 				{
-
+					for(var i = 0; i < 20; i++)
+					{
+						this.addAsteroid(new Asteroid(0.2, 0.007));
+					}
 				},
 				addAsteroid: function(asteroid)
 				{
-					asteroidField.push(asteroid);
+					this.asteroidField.push(asteroid);
+					console.log("Added asteroid out of bounds.");
 				},
 				checkOutOfBounds: function()
 				{
 					for(var i = 0; i < this.asteroidField.length; i++)
 					{
-						if(asteroidField[i].position.x < -20 || asteroidField[i].position.x > 20) this.removeAsteroid(i);
-						else if(asteroidField[i].position.z < -20 || asteroidField[i].position.z > 20) this.removeAsteroid(i);
+						if(	this.asteroidField[i].astro.position.x < -30 ||
+							this.asteroidField[i].astro.position.x > 30)
+						{
+							this.asteroidField[i].astro.position.x = (-this.asteroidField[i].astro.position.x);
+						}
+						else if(this.asteroidField[i].astro.position.z < -30 ||
+								this.asteroidField[i].astro.position.z > 30 )
+						{
+							this.asteroidField[i].astro.position.z = (-this.asteroidField[i].astro.position.z);
+						}
 					}
 				},
 				removeAsteroid: function(asteroid)
 				{
+					GAME.scene.remove(this.asteroidField[asteroid].astro);
+					this.asteroidField[asteroid] = null;
 					this.asteroidField.splice(asteroid, 1);
+					console.log("Removed asteroid out of bounds.");
+				},
+				moveAsteroid: function(asteroid, x, z)
+				{
+					asteroid.position.x += x;
+					asteroid.position.z += z;
 				}
 			},
 
@@ -65,7 +86,7 @@
 			createPlayerCenter: function()
 			{
 				var circleGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.1);
-				var circleMat = new THREE.MeshBasicMaterial({color: 'white'});
+				var circleMat = new THREE.MeshBasicMaterial({color: 'red'});
 				var circle = new THREE.Mesh(circleGeo, circleMat);
 				circle.name = "Player";
 				this.criticalVariables.push(circle);
@@ -73,6 +94,7 @@
 			},
 			createRingsAndBarriers: function()
 			{
+				GAME.barriers = [];
 				for(var j = 1; j < this.RINGMAX+1; j++)
 				{
 					var ring = new THREE.Object3D();
@@ -88,6 +110,7 @@
 						barrier.position.set(x_coord, 0, z_coord);
 						barrier.name = "Barrier " + j + "-" + i;
 						ring.add(barrier);
+						GAME.barriers.push(barrier);
 					}
 					this.criticalVariables.push(ring);
 					this.scene.add(ring);
@@ -101,45 +124,38 @@
 			{
 				this.WIDTH = window.innerWidth * 0.99;
 				this.HEIGHT = window.innerHeight * 0.99;
-				this.renderer.setSize( this.WIDTH, this.HEIGHT );
-				this.camera.aspect = this.WIDTH / this.HEIGHT;
-				this.camera.updateProjectionMatrix();
+				GAME.renderer.setSize( this.WIDTH, this.HEIGHT );
+				GAME.camera.aspect = this.WIDTH / this.HEIGHT;
+				GAME.camera.updateProjectionMatrix();
 			},
 			loadCameras: function()
 			{
-				this.camera =  new THREE.PerspectiveCamera( 45, this.WIDTH / this.HEIGHT, 0.01, 1000 );
-				this.camera.position.set(0, 40, 0);
-				this.camera.lookAt(this.scene.position);
+				GAME.camera =  new THREE.PerspectiveCamera( 45, this.WIDTH / this.HEIGHT, 0.01, 1000 );
+				GAME.camera.position.set(0, 40, 0);
+				GAME.camera.lookAt(this.scene.position);
+			},
+			collisionCheck: function()
+			{
+				
 			}
 		};
-		var Asteroid = function(size, speed, direction) {
+		var Asteroid = function(size, speed) {
 			this.size = size || 0.2;
-			this.speed = speed || 0.1;
-			this.direction = direction;
-		};
-		var asteroids = {
-			asteroidField: [],
+			if(Math.random() > 0.5) this.x = Math.floor((Math.random() * 20) + 15);
+			else this.x = -Math.floor((Math.random() * 20) + 15);
+			if(Math.random() > 0.5) this.z = Math.floor((Math.random() * 20) + 15);
+			else this.z = -Math.floor((Math.random() * 20) + 15);
+			this.speed = speed;
+			if(Math.random() > 0.5) this.directionX = Math.floor((Math.random() * 10));
+			else this.directionX = -Math.floor((Math.random() * 10));
+			if(Math.random() > 0.5) this.directionZ = Math.floor((Math.random() * 10));
+			else this.directionZ = -Math.floor((Math.random() * 10));
 
-			createField: function()
-			{
-
-			},
-			addAsteroid: function(asteroid)
-			{
-				asteroidField.push(asteroid);
-			},
-			checkOutOfBounds: function()
-			{
-				for(var i = 0; i < this.asteroidField.length; i++)
-				{
-					if(asteroidField[i].position.x < -20 || asteroidField[i].position.x > 20) this.removeAsteroid(i);
-					else if(asteroidField[i].position.z < -20 || asteroidField[i].position.z > 20) this.removeAsteroid(i);
-				}
-			},
-			removeAsteroid: function(asteroid)
-			{
-				this.asteroidField.splice(asteroid, 1);
-			}
+			this.astroGeo = new THREE.SphereGeometry(0.25, 16, 16);
+			this.astroMat = new THREE.MeshBasicMaterial({color: 'white'});
+			this.astro = new THREE.Mesh(this.astroGeo, this.astroMat);
+			this.astro.position.set(this.x, 0, this.z);
+			GAME.scene.add(this.astro);
 		};
 		function init()
 		{
@@ -171,6 +187,23 @@
 		function render()
 		{
 			GAME.updateCounter++;
+			for(var i = 0; i < GAME.asteroids.asteroidField.length; i++)
+			{
+				GAME.asteroids.moveAsteroid(
+					GAME.asteroids.asteroidField[i].astro,
+					GAME.asteroids.asteroidField[i].directionX * GAME.asteroids.asteroidField[i].speed,
+					GAME.asteroids.asteroidField[i].directionZ * GAME.asteroids.asteroidField[i].speed);
+			}
+
+			if(GAME.updateCounter % 10 == 0)
+			{
+				GAME.collisionCheck();
+			}
+
+			if(GAME.updateCounter % 120 == 0)
+			{
+				GAME.asteroids.checkOutOfBounds();
+			}
 			// Player presses a keyboard key.
 			keyPressed();
 			GAME.renderer.render( GAME.scene, GAME.camera );
@@ -203,6 +236,7 @@
 				GAME.ringChange = false;
 			}
 		}
+
 	</script>
 </head>
 <body><div id="mainview"></div></body>
