@@ -38,7 +38,7 @@
 				addAsteroid: function(asteroid)
 				{
 					this.asteroidField.push(asteroid);
-					console.log("Added asteroid out of bounds.");
+					console.log("Added asteroid.");
 				},
 				checkOutOfBounds: function()
 				{
@@ -61,7 +61,7 @@
 					GAME.scene.remove(this.asteroidField[asteroid].astro);
 					this.asteroidField[asteroid] = null;
 					this.asteroidField.splice(asteroid, 1);
-					console.log("Removed asteroid out of bounds.");
+					console.log("Removed asteroid.");
 				},
 				moveAsteroid: function(asteroid, x, z)
 				{
@@ -105,7 +105,7 @@
 						z_coord = (j * 2) * Math.sin( i * (Math.PI / (2 * j)) );
 
 						var barrierGeo = new THREE.BoxGeometry(1, 1, 1);
-						var barrierMat = new THREE.MeshBasicMaterial({color: 'green'});
+						var barrierMat = new THREE.MeshBasicMaterial({color: 0x00FF00});
 						var barrier = new THREE.Mesh(barrierGeo, barrierMat);
 						barrier.position.set(x_coord, 0, z_coord);
 						barrier.name = "Barrier " + j + "-" + i;
@@ -136,7 +136,34 @@
 			},
 			collisionCheck: function()
 			{
-				
+				for(var i = 0; i < GAME.barriers.length; i++)
+				{
+					for(var j = 0; j < this.asteroids.asteroidField.length; j++)
+					{
+						if( ((this.asteroids.asteroidField[j].astro.position.x >= GAME.barriers[i].position.x-0.75) &&
+							 (this.asteroids.asteroidField[j].astro.position.x <= GAME.barriers[i].position.x+0.75)) &&
+							((this.asteroids.asteroidField[j].astro.position.z >= GAME.barriers[i].position.z-0.75) &&
+							 (this.asteroids.asteroidField[j].astro.position.z <= GAME.barriers[i].position.z+0.75)) )
+						{
+							this.asteroids.removeAsteroid(j);
+							this.asteroids.addAsteroid(new Asteroid(0.2, 0.007));
+							if(this.barriers[i].material.color.getHex() == 0xFFFF00)
+							{
+								this.barriers[i].material.color.setHex(0xFF0000);
+							}
+							else if(this.barriers[i].material.color.getHex() == 0xFF0000)
+							{
+								console.log("Should be removing an asteroid");
+								GAME.scene.remove(this.barriers[i]);
+								this.barriers.splice(i, 1);
+							}
+							else
+							{
+								this.barriers[i].material.color.setHex(0xFFFF00);
+							}
+						}
+					}
+				}
 			}
 		};
 		var Asteroid = function(size, speed) {
