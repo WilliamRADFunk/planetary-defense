@@ -20,6 +20,7 @@
 
 		var GAME = {
 			state: "LOADING",
+			score: 0,
 			updateCounter: 0,
 			moveSpeed: 0.007,
 			ringSelected: 1,
@@ -67,10 +68,10 @@
 			if(Math.random() > 0.5) asteroid.z = Math.floor((Math.random() * 20) + 15);
 			else asteroid.z = -Math.floor((Math.random() * 20) + 15);
 			
-			if(Math.random() > 0.5) asteroid.directionX = Math.floor((Math.random() * 20) + 1);
-			else asteroid.directionX = -Math.floor((Math.random() * 20) + 1);
-			if(Math.random() > 0.5) asteroid.directionZ = Math.floor((Math.random() * 20) + 1);
-			else asteroid.directionZ = -Math.floor((Math.random() * 20) + 1);
+			if(Math.random() > 0.5) asteroid.directionX = Math.floor((Math.random() * 20) + 5);
+			else asteroid.directionX = -Math.floor((Math.random() * 20) + 5);
+			if(Math.random() > 0.5) asteroid.directionZ = Math.floor((Math.random() * 20) + 5);
+			else asteroid.directionZ = -Math.floor((Math.random() * 20) + 5);
 
 			var astroGeo = new THREE.SphereGeometry(0.25, 16, 16);
 			var astroMat = new THREE.MeshBasicMaterial({color: 'white'});
@@ -86,13 +87,13 @@
 		{
 			for(var i = 0; i < GAME.asteroids.asteroidField.length; i++)
 			{
-				if(	GAME.asteroids.asteroidField[i].astro.position.x < -25 ||
-					GAME.asteroids.asteroidField[i].astro.position.x > 25)
+				if(	GAME.asteroids.asteroidField[i].astro.position.x < -30 ||
+					GAME.asteroids.asteroidField[i].astro.position.x > 30)
 				{
 					GAME.asteroids.asteroidField[i].astro.position.x = (-GAME.asteroids.asteroidField[i].astro.position.x);
 				}
-				else if(GAME.asteroids.asteroidField[i].astro.position.z < -25 ||
-						GAME.asteroids.asteroidField[i].astro.position.z > 25 )
+				else if(GAME.asteroids.asteroidField[i].astro.position.z < -30 ||
+						GAME.asteroids.asteroidField[i].astro.position.z > 30 )
 				{
 					GAME.asteroids.asteroidField[i].astro.position.z = (-GAME.asteroids.asteroidField[i].astro.position.z);
 				}
@@ -304,6 +305,12 @@
 					GAME.collisionCheck();
 				}
 
+				if(GAME.updateCounter % 60 == 0)
+				{
+					GAME.score += 10;
+					console.log("Score is: " + GAME.score);
+				}
+
 				if(GAME.updateCounter % 120 == 0)
 				{
 					GAME.asteroids.checkOutOfBounds();
@@ -312,7 +319,7 @@
 				if(GAME.updateCounter % 3600 == 0)
 				{
 					GAME.moveSpeed += 0.001;
-					GAME.asteroids.asteroidField.push(GAME.asteroids.addAsteroid(0.02, GAME.moveSpeed));
+					GAME.asteroids.addAsteroid(0.02, GAME.moveSpeed);
 				}
 				// Player presses a keyboard key.
 				keyPressed();
@@ -320,6 +327,9 @@
 			else if(GAME.state == "GAME OVER")
 			{
 				console.log("Game has ended.");
+				console.log("Barriers remaining: " + GAME.barriers.length);
+				console.log("Final score is score - (100 * remaining barriers): " + (GAME.score - (100*GAME.barriers.length)));
+				return;
 			}
 			GAME.renderer.render( GAME.scene, GAME.camera );
 			requestAnimationFrame( render );
