@@ -21,10 +21,10 @@
 		var GAME = {
 			state: "LOADING",
 			updateCounter: 0,
-			moveSpeed: 0.001,
+			moveSpeed: 0.007,
 			ringSelected: 1,
 			RINGMAX: 3,
-			ASTROMAX: 30,
+			ASTROMAX: 35,
 			ringChange: false,
 			criticalVariables: [],
 			asteroids: null,
@@ -42,7 +42,7 @@
 		{
 			for(var i = 0; i < GAME.ASTROMAX; i++)
 			{
-				GAME.asteroids.addAsteroid(0.2, moveSpeed);
+				GAME.asteroids.addAsteroid(0.2, GAME.moveSpeed);
 			}
 		};
 
@@ -84,13 +84,13 @@
 		{
 			for(var i = 0; i < GAME.asteroids.asteroidField.length; i++)
 			{
-				if(	GAME.asteroids.asteroidField[i].astro.position.x < -30 ||
-					GAME.asteroids.asteroidField[i].astro.position.x > 30)
+				if(	GAME.asteroids.asteroidField[i].astro.position.x < -25 ||
+					GAME.asteroids.asteroidField[i].astro.position.x > 25)
 				{
 					GAME.asteroids.asteroidField[i].astro.position.x = (-GAME.asteroids.asteroidField[i].astro.position.x);
 				}
-				else if(GAME.asteroids.asteroidField[i].astro.position.z < -30 ||
-						GAME.asteroids.asteroidField[i].astro.position.z > 30 )
+				else if(GAME.asteroids.asteroidField[i].astro.position.z < -25 ||
+						GAME.asteroids.asteroidField[i].astro.position.z > 25 )
 				{
 					GAME.asteroids.asteroidField[i].astro.position.z = (-GAME.asteroids.asteroidField[i].astro.position.z);
 				}
@@ -128,7 +128,7 @@
 
 		GAME.createPlayerCenter = function()
 		{
-			var circleGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.1);
+			var circleGeo = new THREE.CylinderGeometry(1, 1, 0.1);
 			var circleMat = new THREE.MeshBasicMaterial({color: 'red'});
 			var circle = new THREE.Mesh(circleGeo, circleMat);
 			circle.name = "Player";
