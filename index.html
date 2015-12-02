@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-	<title>Surrounded</title>
+	<title>Planetary Defense</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<!-- Resets all default browser stylings for a clean slate -->
     <link rel="stylesheet" href="css/reset_author_richard_clark.css">
@@ -34,21 +34,13 @@
 			soundFx_1: null,
 			soundFx_2: null,
 			camera: null,
-			scene: null,
-		};
+			scene: null, };
 
-		GAME.asteroids = {
-			asteroidField: []
-		};
-
+		GAME.asteroids = { asteroidField: [] };
 		GAME.asteroids.createField = function()
 		{
-			for(var i = 0; i < GAME.ASTROMAX; i++)
-			{
-				GAME.asteroids.addAsteroid(0.2, GAME.moveSpeed);
-			}
+			for(var i = 0; i < GAME.ASTROMAX; i++) GAME.asteroids.addAsteroid(0.2, GAME.moveSpeed);
 		};
-
 		GAME.asteroids.addAsteroid = function(size, speed)
 		{
 			var asteroid = {
@@ -82,7 +74,6 @@
 			GAME.asteroids.asteroidField.push(asteroid);
 			console.log("Added asteroid.");
 		};
-
 		GAME.asteroids.checkOutOfBounds = function()
 		{
 			for(var i = 0; i < GAME.asteroids.asteroidField.length; i++)
@@ -99,7 +90,6 @@
 				}
 			}
 		};
-
 		GAME.asteroids.removeAsteroid = function(asteroid)
 		{
 			GAME.scene.remove(GAME.asteroids.asteroidField[asteroid].astro);
@@ -107,13 +97,11 @@
 			GAME.asteroids.asteroidField.splice(asteroid, 1);
 			console.log("Removed asteroid.");
 		};
-
 		GAME.asteroids.moveAsteroid = function(asteroid, x, z)
 		{
 			asteroid.position.x += x;
 			asteroid.position.z += z;
 		};
-
 		GAME.createRenderers = function()
 		{
 			if(window.WebGLRenderingContext) GAME.renderer = new THREE.WebGLRenderer();
@@ -122,13 +110,11 @@
 			GAME.renderer.setSize( GAME.WIDTH, GAME.HEIGHT );
 			GAME.renderer.autoClear = false;
 		};
-
 		GAME.attachViewsToHTML = function()
 		{
 			var container = document.getElementById("mainview");
 			container.appendChild( GAME.renderer.domElement );
 		};
-
 		GAME.createPlayerCenter = function()
 		{
 			var circleGeo = new THREE.CylinderGeometry(1, 1, 0.1);
@@ -138,7 +124,6 @@
 			GAME.criticalVariables.push(circle);
 			GAME.scene.add(circle);
 		};
-
 		GAME.createRingsAndBarriers = function()
 		{
 			for(var j = 1; j < GAME.RINGMAX+1; j++)
@@ -162,7 +147,6 @@
 				GAME.scene.add(ring);
 			}
 		};
-
 		GAME.removeBarrier = function(barrier)
 		{
 			console.log("Removing: " + GAME.barriers[barrier].name);
@@ -171,12 +155,10 @@
 			GAME.scene.remove(GAME.barriers[barrier]);
 			GAME.barriers.splice(barrier, 1);
 		};
-
 		GAME.registerListeners = function()
 		{
 			window.addEventListener( 'resize', GAME.onWindowResize, false);
 		};
-
 		GAME.onWindowResize = function()
 		{
 			var WIDTH = window.innerWidth * 0.99;
@@ -185,20 +167,17 @@
 			GAME.camera.aspect = WIDTH / HEIGHT;
 			GAME.camera.updateProjectionMatrix();
 		};
-
 		GAME.loadCameras = function()
 		{
 			GAME.camera =  new THREE.PerspectiveCamera( 45, GAME.WIDTH / GAME.HEIGHT, 0.01, 1000 );
 			GAME.camera.position.set(0, 40, 0);
 			GAME.camera.lookAt(GAME.scene.position);
 		};
-
 		GAME.loadSounds = function()
 		{
 			GAME.soundFx_1 = new Audio("assets/audio/End_Fx.mp3");
 			GAME.soundFx_2 = new Audio("assets/audio/Power_Failure.mp3");
 		}
-
 		GAME.playSound = function(track)
 		{
 			GAME.soundFx_1.pause();
@@ -208,7 +187,6 @@
 			if(track == 1) GAME.soundFx_1.play();
 			else GAME.soundFx_2.play();
 		}
-
 		GAME.collisionCheck = function()
 		{
 			for(var i = 0; i < GAME.barriers.length; i++)
@@ -253,7 +231,6 @@
 				}
 			}
 		};
-
 		function init()
 		{
 			GAME.WIDTH = window.innerWidth * 0.99;
@@ -286,10 +263,7 @@
 		function render()
 		{
 			GAME.updateCounter++;
-			if(GAME.state == "LOADING" && GAME.updateCounter >= 240)
-			{
-				GAME.state = "ACTIVE";
-			}
+			if(GAME.state == "LOADING" && GAME.updateCounter >= 240) GAME.state = "ACTIVE";
 			else if(GAME.state == "ACTIVE")
 			{
 				for(var i = 0; i < GAME.asteroids.asteroidField.length; i++)
@@ -299,30 +273,19 @@
 						GAME.asteroids.asteroidField[i].directionX * GAME.asteroids.asteroidField[i].speed,
 						GAME.asteroids.asteroidField[i].directionZ * GAME.asteroids.asteroidField[i].speed);
 				}
-
-				if(GAME.updateCounter % 10 == 0)
-				{
-					GAME.collisionCheck();
-				}
-
+				if(GAME.updateCounter % 10 == 0) GAME.collisionCheck();
 				if(GAME.updateCounter % 60 == 0)
 				{
 					GAME.score += 10;
 					console.log("Score is: " + GAME.score);
 				}
-
-				if(GAME.updateCounter % 120 == 0)
-				{
-					GAME.asteroids.checkOutOfBounds();
-				}
-
+				if(GAME.updateCounter % 120 == 0) GAME.asteroids.checkOutOfBounds();
 				if(GAME.updateCounter % 3600 == 0)
 				{
 					GAME.moveSpeed += 0.001;
 					GAME.asteroids.addAsteroid(0.02, GAME.moveSpeed);
 				}
-				// Player presses a keyboard key.
-				keyPressed();
+				keyPressed(); // Player presses a keyboard key.
 			}
 			else if(GAME.state == "GAME OVER")
 			{
@@ -336,16 +299,15 @@
 		}
 		function keyPressed()
 		{
-			// Simultaneous press of S W & D, or UP & RIGHT
 			if( GAME.keyboard.pressed("RIGHT") || GAME.keyboard.pressed("D") )
 			{
 				GAME.criticalVariables[0].rotation.y -= 0.1; // player center.
-				GAME.criticalVariables[GAME.ringSelected].rotation.y -= (0.1 / GAME.ringSelected); // defensive center.
+				GAME.criticalVariables[GAME.ringSelected].rotation.y -= (0.1 / GAME.ringSelected); // defensive ring.
 			}
 			else if( GAME.keyboard.pressed("LEFT") || GAME.keyboard.pressed("A") )
 			{
 				GAME.criticalVariables[0].rotation.y += 0.1; // player center.
-				GAME.criticalVariables[GAME.ringSelected].rotation.y += (0.1 / GAME.ringSelected); // defensive center.
+				GAME.criticalVariables[GAME.ringSelected].rotation.y += (0.1 / GAME.ringSelected); // defensive ring.
 			}
 			else if( GAME.keyboard.pressed("SPACE") )
 			{
@@ -356,12 +318,8 @@
 				}
 				if(GAME.ringSelected > GAME.RINGMAX) GAME.ringSelected = 1;
 			}
-			else
-			{
-				GAME.ringChange = false;
-			}
+			else GAME.ringChange = false;
 		}
-
 	</script>
 </head>
 <body><div id="mainview"></div></body>
