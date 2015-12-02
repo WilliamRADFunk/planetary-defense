@@ -65,9 +65,9 @@
 			if(Math.random() > 0.5) asteroid.z = Math.floor((Math.random() * 20) + 15);
 			else asteroid.z = -Math.floor((Math.random() * 20) + 15);
 			
-			if(Math.random() > 0.5) asteroid.directionX = Math.floor((Math.random() * 20));
+			if(Math.random() > 0.5) asteroid.directionX = Math.floor((Math.random() * 20) + 1);
 			else asteroid.directionX = -Math.floor((Math.random() * 20));
-			if(Math.random() > 0.5) asteroid.directionZ = Math.floor((Math.random() * 20));
+			if(Math.random() > 0.5) asteroid.directionZ = Math.floor((Math.random() * 20) + 1);
 			else asteroid.directionZ = -Math.floor((Math.random() * 20));
 
 			var astroGeo = new THREE.SphereGeometry(0.25, 16, 16);
@@ -196,6 +196,14 @@
 			{
 				for(var j = 0; j < GAME.asteroids.asteroidField.length; j++)
 				{
+					if( ((GAME.asteroids.asteroidField[j].astro.position.x >= GAME.criticalVariables[0].position.x-1) &&
+						 (GAME.asteroids.asteroidField[j].astro.position.x <= GAME.criticalVariables[0].position.x+1)) &&
+						((GAME.asteroids.asteroidField[j].astro.position.z >= GAME.criticalVariables[0].position.z-1) &&
+						 (GAME.asteroids.asteroidField[j].astro.position.z <= GAME.criticalVariables[0].position.z+1)) )
+					{
+						GAME.state = "GAME OVER";
+						return;
+					}
 					var vector = new THREE.Vector3();
 					vector.setFromMatrixPosition(GAME.barriers[i].matrixWorld);
 					if( ((GAME.asteroids.asteroidField[j].astro.position.x >= vector.x-0.75) &&
@@ -212,18 +220,12 @@
 						else if(GAME.barriers[i].material.color.getHex() == 0xFF0000)
 						{
 							GAME.removeBarrier(i);
+							return;
 						}
 						else
 						{
 							GAME.barriers[i].material.color.setHex(0xFFFF00);
 						}
-					}
-					if( ((GAME.asteroids.asteroidField[j].astro.position.x >= GAME.criticalVariables[0].position.x-0.75) &&
-						 (GAME.asteroids.asteroidField[j].astro.position.x <= GAME.criticalVariables[0].position.x+0.75)) &&
-						((GAME.asteroids.asteroidField[j].astro.position.z >= GAME.criticalVariables[0].position.z-0.75) &&
-						 (GAME.asteroids.asteroidField[j].astro.position.z <= GAME.criticalVariables[0].position.z+0.75)) )
-					{
-						GAME.state = "GAME OVER";
 					}
 				}
 			}
