@@ -163,6 +163,8 @@
 		{
 			var WIDTH = window.innerWidth * 0.99;
 			var HEIGHT = window.innerHeight * 0.99;
+			if(WIDTH < HEIGHT) HEIGHT = WIDTH;
+			else WIDTH = HEIGHT;
 			GAME.renderer.setSize( WIDTH, HEIGHT );
 			GAME.camera.aspect = WIDTH / HEIGHT;
 			GAME.camera.updateProjectionMatrix();
@@ -235,6 +237,8 @@
 		{
 			GAME.WIDTH = window.innerWidth * 0.99;
 			GAME.HEIGHT = window.innerHeight * 0.99;
+			if(GAME.WIDTH < GAME.HEIGHT) GAME.HEIGHT = GAME.WIDTH;
+			else GAME.WIDTH = GAME.HEIGHT;
 			/*************************************************************************/
 			GAME.keyboard = new THREEx.KeyboardState();
 			/*************************************************************************/
@@ -273,17 +277,18 @@
 						GAME.asteroids.asteroidField[i].directionX * GAME.asteroids.asteroidField[i].speed,
 						GAME.asteroids.asteroidField[i].directionZ * GAME.asteroids.asteroidField[i].speed);
 				}
-				if(GAME.updateCounter % 10 == 0) GAME.collisionCheck();
+				if(GAME.updateCounter % 2 == 0) GAME.collisionCheck();
 				if(GAME.updateCounter % 60 == 0)
 				{
 					GAME.score += 10;
-					console.log("Score is: " + GAME.score);
+					document.getElementById("score").innerHTML = GAME.score;
 				}
 				if(GAME.updateCounter % 120 == 0) GAME.asteroids.checkOutOfBounds();
-				if(GAME.updateCounter % 3600 == 0)
+				if(GAME.updateCounter % 1800 == 0)
 				{
 					GAME.moveSpeed += 0.001;
-					GAME.asteroids.addAsteroid(0.02, GAME.moveSpeed);
+					for(var j = 0; j < 4; j++) GAME.asteroids.addAsteroid(0.02, GAME.moveSpeed);
+					for(var k = 0; k < 2; k++) GAME.asteroids.removeAsteroid(0);
 				}
 				keyPressed(); // Player presses a keyboard key.
 			}
@@ -291,7 +296,8 @@
 			{
 				console.log("Game has ended.");
 				console.log("Barriers remaining: " + GAME.barriers.length);
-				console.log("Final score is score - (100 * remaining barriers): " + (GAME.score - (100*GAME.barriers.length)));
+				console.log("Final score is score + (100 * remaining barriers): " + (GAME.score + (100*GAME.barriers.length)));
+				document.getElementById("score").innerHTML = GAME.score + (100 * GAME.barriers.length);
 				return;
 			}
 			GAME.renderer.render( GAME.scene, GAME.camera );
@@ -322,7 +328,10 @@
 		}
 	</script>
 </head>
-<body><div id="mainview"></div></body>
+<body>
+	<div id="mainview"></div>
+	<div id="scoreboard"><h1>SCORE</h1><p id="score">0</p></div>
+</body>
 <script>window.onload = init;</script>
 </html>
 

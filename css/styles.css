@@ -11,6 +11,31 @@ body
 	position: absolute;
 	height: 100%;
 	left: 0px;
+	margin: auto auto;
 	top: 0px;
 	width: 100%;
+}
+#scoreboard
+{
+	background-color: #CCCCCC;
+	display: block;
+	position: absolute;
+	height: 70px;
+	opacity: 0.5;
+	left: 0px;
+	top: 0px;
+	width: 20%;
+	z-index: 1000;
+}
+#scoreboard h1
+{
+	color: #CC0000;
+	margin: 10px auto;
+	text-align: center;
+	text-decoration: underline;
+}
+#scoreboard p
+{
+	color: #CC0000;
+	text-align: center;
 }
