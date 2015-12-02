@@ -30,6 +30,8 @@
 			asteroids: null,
 			renderer: [],
 			barriers: [],
+			soundFx_1: null,
+			soundFx_2: null,
 			camera: null,
 			scene: null,
 		};
@@ -190,6 +192,22 @@
 			GAME.camera.lookAt(GAME.scene.position);
 		};
 
+		GAME.loadSounds = function()
+		{
+			GAME.soundFx_1 = new Audio("assets/audio/End_Fx.mp3");
+			GAME.soundFx_2 = new Audio("assets/audio/Power_Failure.mp3");
+		}
+
+		GAME.playSound = function(track)
+		{
+			GAME.soundFx_1.pause();
+			GAME.soundFx_1.currentTime = 0;
+			GAME.soundFx_2.pause();
+			GAME.soundFx_2.currentTime = 0;
+			if(track == 1) GAME.soundFx_1.play();
+			else GAME.soundFx_2.play();
+		}
+
 		GAME.collisionCheck = function()
 		{
 			for(var i = 0; i < GAME.barriers.length; i++)
@@ -206,25 +224,29 @@
 					}
 					var vector = new THREE.Vector3();
 					vector.setFromMatrixPosition(GAME.barriers[i].matrixWorld);
-					if( ((GAME.asteroids.asteroidField[j].astro.position.x >= vector.x-0.75) &&
-						 (GAME.asteroids.asteroidField[j].astro.position.x <= vector.x+0.75)) &&
-						((GAME.asteroids.asteroidField[j].astro.position.z >= vector.z-0.75) &&
-						 (GAME.asteroids.asteroidField[j].astro.position.z <= vector.z+0.75)) )
+					if( ((GAME.asteroids.asteroidField[j].astro.position.x >= vector.x-0.9) &&
+						 (GAME.asteroids.asteroidField[j].astro.position.x <= vector.x+0.9)) &&
+						((GAME.asteroids.asteroidField[j].astro.position.z >= vector.z-0.9) &&
+						 (GAME.asteroids.asteroidField[j].astro.position.z <= vector.z+0.9)) )
 					{
 						GAME.asteroids.removeAsteroid(j);
 						GAME.asteroids.addAsteroid(0.2, GAME.moveSpeed);
 						if(GAME.barriers[i].material.color.getHex() == 0xFFFF00)
 						{
 							GAME.barriers[i].material.color.setHex(0xFF0000);
+							GAME.playSound(1);
 						}
 						else if(GAME.barriers[i].material.color.getHex() == 0xFF0000)
 						{
 							GAME.removeBarrier(i);
+							GAME.playSound(2);
+							GAME.soundFx_2.play();
 							return;
 						}
 						else
 						{
 							GAME.barriers[i].material.color.setHex(0xFFFF00);
+							GAME.playSound(1);
 						}
 					}
 				}
@@ -253,6 +275,8 @@
 			GAME.registerListeners();		// Registers all Event Listeners.
 			/*************************************************************************/
 			GAME.loadCameras();				// Top-down viewpoint.
+			/*************************************************************************/
+			GAME.loadSounds();				// Top-down viewpoint.
 			/*************************************************************************/
 			GAME.asteroids.createField();	// Creates initial asteroid belt.
 			/*************************************************************************/
@@ -283,6 +307,12 @@
 				if(GAME.updateCounter % 120 == 0)
 				{
 					GAME.asteroids.checkOutOfBounds();
+				}
+
+				if(GAME.updateCounter % 3600 == 0)
+				{
+					GAME.moveSpeed += 0.001;
+					GAME.asteroids.asteroidField.push(GAME.asteroids.addAsteroid(0.02, GAME.moveSpeed));
 				}
 				// Player presses a keyboard key.
 				keyPressed();
@@ -327,3 +357,9 @@
 <body><div id="mainview"></div></body>
 <script>window.onload = init;</script>
 </html>
+
+<!--	
+	* Electric buzz sound "End FX" was provided by http://soundbible.com/2017-End-Fx.html with a Sampling Plus 1.0 license. Recorded by Mike Devils.
+
+	* Power failure sound "Poer Failure" was provided by http://soundbible.com/1610-Power-Failure.html with a Attribution 3.0 license. Recorded by Mike Koenig.
+-->
