@@ -168,6 +168,12 @@
 			GAME.renderer.setSize( WIDTH, HEIGHT );
 			GAME.camera.aspect = WIDTH / HEIGHT;
 			GAME.camera.updateProjectionMatrix();
+			document.getElementById("mainview").style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + "px";
+			document.getElementById("scoreboard").style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + "px";
+			document.getElementById("mainview").style.top = (((window.innerHeight * 0.99) - HEIGHT) / 2) + "px";
+			document.getElementById("scoreboard").style.top = (((window.innerHeight * 0.99) - HEIGHT) / 2) + "px";
+			document.body.style.width = (window.innerWidth ) + "px";
+			document.body.style.height = (window.innerHeight) + "px";
 		};
 		GAME.loadCameras = function()
 		{
@@ -239,6 +245,12 @@
 			GAME.HEIGHT = window.innerHeight * 0.99;
 			if(GAME.WIDTH < GAME.HEIGHT) GAME.HEIGHT = GAME.WIDTH;
 			else GAME.WIDTH = GAME.HEIGHT;
+			document.getElementById("mainview").style.left = (((window.innerWidth * 0.99) - GAME.WIDTH) / 2) + "px";
+			document.getElementById("scoreboard").style.left = (((window.innerWidth * 0.99) - GAME.WIDTH) / 2) + "px";
+			document.getElementById("mainview").style.top = (((window.innerHeight * 0.99) - GAME.HEIGHT) / 2) + "px";
+			document.getElementById("scoreboard").style.top = (((window.innerHeight * 0.99) - GAME.HEIGHT) / 2) + "px";
+			document.body.style.width = (window.innerWidth ) + "px";
+			document.body.style.height = (window.innerHeight) + "px";
 			/*************************************************************************/
 			GAME.keyboard = new THREEx.KeyboardState();
 			/*************************************************************************/
@@ -287,8 +299,8 @@
 				if(GAME.updateCounter % 1800 == 0)
 				{
 					GAME.moveSpeed += 0.001;
-					for(var j = 0; j < 4; j++) GAME.asteroids.addAsteroid(0.02, GAME.moveSpeed);
-					for(var k = 0; k < 2; k++) GAME.asteroids.removeAsteroid(0);
+					for(var j = 0; j < 8; j++) GAME.asteroids.addAsteroid(0.02, GAME.moveSpeed);
+					for(var k = 0; k < 6; k++) GAME.asteroids.removeAsteroid(0);
 				}
 				keyPressed(); // Player presses a keyboard key.
 			}
@@ -297,7 +309,7 @@
 				console.log("Game has ended.");
 				console.log("Barriers remaining: " + GAME.barriers.length);
 				console.log("Final score is score + (100 * remaining barriers): " + (GAME.score + (100*GAME.barriers.length)));
-				document.getElementById("score").innerHTML = GAME.score + (100 * GAME.barriers.length);
+				document.getElementById("score").innerHTML = GAME.score + " + (" + GAME.barriers.length + " * 100) = " + (GAME.score + (100 * GAME.barriers.length));
 				return;
 			}
 			GAME.renderer.render( GAME.scene, GAME.camera );
@@ -339,4 +351,6 @@
 	* Electric buzz sound "End FX" was provided by http://soundbible.com/2017-End-Fx.html with a Sampling Plus 1.0 license. Recorded by Mike Devils.
 
 	* Power failure sound "Poer Failure" was provided by http://soundbible.com/1610-Power-Failure.html with a Attribution 3.0 license. Recorded by Mike Koenig.
+
+	* Background image from http://petaimg.com/cool-wallpaper-stock-pictures/ with DMCA license 
 -->
