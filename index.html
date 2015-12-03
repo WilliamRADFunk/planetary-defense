@@ -34,7 +34,8 @@
 			soundFx_1: null,
 			soundFx_2: null,
 			camera: null,
-			scene: null, };
+			scene: null,
+			mouseX: 0 };
 
 		GAME.asteroids = { asteroidField: [] };
 		GAME.asteroids.createField = function()
@@ -72,7 +73,7 @@
 			GAME.scene.add(asteroid.astro);
 
 			GAME.asteroids.asteroidField.push(asteroid);
-			console.log("Added asteroid.");
+			//console.log("Added asteroid.");
 		};
 		GAME.asteroids.checkOutOfBounds = function()
 		{
@@ -95,13 +96,27 @@
 			GAME.scene.remove(GAME.asteroids.asteroidField[asteroid].astro);
 			GAME.asteroids.asteroidField[asteroid] = null;
 			GAME.asteroids.asteroidField.splice(asteroid, 1);
-			console.log("Removed asteroid.");
+			//console.log("Removed asteroid.");
 		};
 		GAME.asteroids.moveAsteroid = function(asteroid, x, z)
 		{
 			asteroid.position.x += x;
 			asteroid.position.z += z;
 		};
+		GAME.setView = function()
+		{
+			GAME.WIDTH = window.innerWidth * 0.99;
+			GAME.HEIGHT = window.innerHeight * 0.99;
+			if(GAME.WIDTH < GAME.HEIGHT) GAME.HEIGHT = GAME.WIDTH;
+			else GAME.WIDTH = GAME.HEIGHT;
+			document.getElementById("mainview").style.left = (((window.innerWidth * 0.99) - GAME.WIDTH) / 2) + "px";
+			document.getElementById("scoreboard").style.left = (((window.innerWidth * 0.99) - GAME.WIDTH) / 2) + "px";
+			document.getElementById("mainview").style.top = (((window.innerHeight * 0.99) - GAME.HEIGHT) / 2) + "px";
+			document.getElementById("scoreboard").style.top = (((window.innerHeight * 0.99) - GAME.HEIGHT) / 2) + "px";
+			document.body.style.width = (window.innerWidth ) + "px";
+			document.body.style.height = (window.innerHeight) + "px";
+			GAME.windowHalfX = window.innerWidth / 2;
+		}
 		GAME.createRenderers = function()
 		{
 			if(window.WebGLRenderingContext) GAME.renderer = new THREE.WebGLRenderer();
@@ -149,7 +164,7 @@
 		};
 		GAME.removeBarrier = function(barrier)
 		{
-			console.log("Removing: " + GAME.barriers[barrier].name);
+			//console.log("Removing: " + GAME.barriers[barrier].name);
 			var ring = GAME.barriers[barrier].parent;
 			ring.remove(GAME.barriers[barrier]);
 			GAME.scene.remove(GAME.barriers[barrier]);
@@ -158,6 +173,9 @@
 		GAME.registerListeners = function()
 		{
 			window.addEventListener( 'resize', GAME.onWindowResize, false);
+			document.addEventListener( 'mousedown', GAME.onDocumentMouseDown, false );
+			document.addEventListener( 'touchstart', GAME.onDocumentTouchStart, false );
+			document.addEventListener( 'touchmove', GAME.onDocumentTouchMove, false );
 		};
 		GAME.onWindowResize = function()
 		{
@@ -174,6 +192,9 @@
 			document.getElementById("scoreboard").style.top = (((window.innerHeight * 0.99) - HEIGHT) / 2) + "px";
 			document.body.style.width = (window.innerWidth ) + "px";
 			document.body.style.height = (window.innerHeight) + "px";
+			GAME.windowHalfX = window.innerWidth / 2;
+			GAME.WIDTH = WIDTH;
+			GAME.HEIGHT = HEIGHT;
 		};
 		GAME.loadCameras = function()
 		{
@@ -194,6 +215,53 @@
 			GAME.soundFx_2.currentTime = 0;
 			if(track == 1) GAME.soundFx_1.play();
 			else GAME.soundFx_2.play();
+		}
+		GAME.onDocumentMouseDown = function( event )
+		{
+			event.preventDefault();
+			document.addEventListener( 'mousemove', GAME.onDocumentMouseMove, false );
+			document.addEventListener( 'mouseup', GAME.onDocumentMouseUp, false );
+		}
+		GAME.onDocumentMouseMove = function( event )
+		{
+			var mouseXBefore = GAME.mouseX;
+			GAME.mouseX = event.clientX + (GAME.WIDTH / 2);
+			var posOrNeg = (GAME.mouseX > mouseXBefore) ? 1 : -1;
+			GAME.criticalVariables[0].rotation.y += (0.05 * posOrNeg); // player center.
+			GAME.criticalVariables[GAME.ringSelected].rotation.y += ((0.05 * posOrNeg) / GAME.ringSelected); // defensive ring.
+		}
+		GAME.onDocumentMouseUp = function( event )
+		{
+			document.removeEventListener( 'mousemove', GAME.onDocumentMouseMove, false );
+			document.removeEventListener( 'mouseup', GAME.onDocumentMouseUp, false );
+			//console.log("Ring changed");
+			GAME.ringSelected++; // player chose a different ring to rotate.
+			if(GAME.ringSelected > GAME.RINGMAX) GAME.ringSelected = 1;
+		}
+		GAME.onDocumentTouchStart = function( event )
+		{
+			console.log("Touch start");
+			if ( event.touches.length === 1 )
+			{
+				event.preventDefault();
+				//console.log("Ring changed");
+				GAME.ringSelected++; // player chose a different ring to rotate.
+				if(GAME.ringSelected > GAME.RINGMAX) GAME.ringSelected = 1;
+			}
+		}
+
+		GAME.onDocumentTouchMove = function( event )
+		{
+			console.log("Touch move");
+			var mouseXBefore = GAME.mouseX;
+			if ( event.touches.length === 1 )
+			{
+				event.preventDefault();
+				GAME.mouseX = event.touches[ 0 ].pageX;
+				var posOrNeg = (GAME.mouseX > mouseXBefore) ? 1 : -1;
+				GAME.criticalVariables[0].rotation.y += (0.05 * posOrNeg); // player center.
+				GAME.criticalVariables[GAME.ringSelected].rotation.y += ((0.05 * posOrNeg) / GAME.ringSelected); // defensive ring.
+			}
 		}
 		GAME.collisionCheck = function()
 		{
@@ -241,16 +309,8 @@
 		};
 		function init()
 		{
-			GAME.WIDTH = window.innerWidth * 0.99;
-			GAME.HEIGHT = window.innerHeight * 0.99;
-			if(GAME.WIDTH < GAME.HEIGHT) GAME.HEIGHT = GAME.WIDTH;
-			else GAME.WIDTH = GAME.HEIGHT;
-			document.getElementById("mainview").style.left = (((window.innerWidth * 0.99) - GAME.WIDTH) / 2) + "px";
-			document.getElementById("scoreboard").style.left = (((window.innerWidth * 0.99) - GAME.WIDTH) / 2) + "px";
-			document.getElementById("mainview").style.top = (((window.innerHeight * 0.99) - GAME.HEIGHT) / 2) + "px";
-			document.getElementById("scoreboard").style.top = (((window.innerHeight * 0.99) - GAME.HEIGHT) / 2) + "px";
-			document.body.style.width = (window.innerWidth ) + "px";
-			document.body.style.height = (window.innerHeight) + "px";
+			/*************************************************************************/
+			GAME.setView();					// Sizes the game window.
 			/*************************************************************************/
 			GAME.keyboard = new THREEx.KeyboardState();
 			/*************************************************************************/
