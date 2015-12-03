@@ -18,7 +18,8 @@
 	<script src="js/external/CanvasRenderer.js"></script>
 	<script>
 
-		var GAME = {
+		var GAME =
+		{
 			state: "LOADING",
 			score: 0,
 			updateCounter: 0,
@@ -75,7 +76,70 @@
 			GAME.asteroids.asteroidField.push(asteroid);
 			//console.log("Added asteroid.");
 		};
-		GAME.asteroids.checkOutOfBounds = function()
+		GAME.asteroids.removeAsteroid = function(asteroid)
+		{
+			GAME.scene.remove(GAME.asteroids.asteroidField[asteroid].astro);
+			GAME.asteroids.asteroidField[asteroid] = null;
+			GAME.asteroids.asteroidField.splice(asteroid, 1);
+			//console.log("Removed asteroid.");
+		};
+		GAME.asteroids.moveAsteroid = function(asteroid, x, z)
+		{
+			asteroid.position.x += x;
+			asteroid.position.z += z;
+		};
+		GAME.repairNode =
+		{
+			x: 29,
+			z: 29,
+			directionX: null,
+			directionZ: null,
+			size: 0.4,
+			node: null,
+			speed: 0.007
+		};
+		GAME.repairNode.create = function(speed)
+		{
+			GAME.repairNode.speed = speed;
+			var nodeGeo = new THREE.SphereGeometry(GAME.repairNode.size, 16, 16);
+			var nodeMat = new THREE.MeshBasicMaterial({color: 'blue'});
+			GAME.repairNode.node = new THREE.Mesh(nodeGeo, nodeMat);
+			GAME.repairNode.node.position.set(GAME.repairNode.node.x, 0, GAME.repairNode.node.z);
+			GAME.scene.add(GAME.repairNode.node);
+			GAME.repairNode.node.material.visible = false;
+		}
+		GAME.repairNode.add = function(speed)
+		{
+			if(Math.random() > 0.5) GAME.repairNode.x = Math.floor((Math.random() * 20) + 15);
+			else GAME.repairNode.x = -Math.floor((Math.random() * 20) + 15);
+			if(Math.random() > 0.5) GAME.repairNode.z = Math.floor((Math.random() * 20) + 15);
+			else GAME.repairNode.z = -Math.floor((Math.random() * 20) + 15);
+			
+			if(Math.random() > 0.5) GAME.repairNode.directionX = Math.floor((Math.random() * 20) + 5);
+			else GAME.repairNode.directionX = -Math.floor((Math.random() * 20) + 5);
+			if(Math.random() > 0.5) GAME.repairNode.directionZ = Math.floor((Math.random() * 20) + 5);
+			else GAME.repairNode.directionZ = -Math.floor((Math.random() * 20) + 5);
+			GAME.repairNode.node.position.x = GAME.repairNode.x;
+			GAME.repairNode.node.position.z = GAME.repairNode.z;
+			GAME.repairNode.speed = speed;
+			GAME.repairNode.node.material.visible = true;
+		}
+		GAME.repairNode.move = function()
+		{
+			GAME.repairNode.node.position.x += GAME.repairNode.directionX * GAME.repairNode.speed;
+			GAME.repairNode.node.position.z += GAME.repairNode.directionZ * GAME.repairNode.speed;
+		}
+		GAME.repairNode.remove = function()
+		{
+			GAME.repairNode.node.position.x = 100;
+			GAME.repairNode.node.position.z = 100;
+			GAME.repairNode.x = 100;
+			GAME.repairNode.z = 100;
+			GAME.repairNode.directionX = 0;
+			GAME.repairNode.directionZ = 0;
+			GAME.repairNode.node.material.visible = false;
+		}
+		GAME.checkOutOfBounds = function()
 		{
 			for(var i = 0; i < GAME.asteroids.asteroidField.length; i++)
 			{
@@ -90,18 +154,14 @@
 					GAME.asteroids.asteroidField[i].astro.position.z = (-GAME.asteroids.asteroidField[i].astro.position.z);
 				}
 			}
-		};
-		GAME.asteroids.removeAsteroid = function(asteroid)
-		{
-			GAME.scene.remove(GAME.asteroids.asteroidField[asteroid].astro);
-			GAME.asteroids.asteroidField[asteroid] = null;
-			GAME.asteroids.asteroidField.splice(asteroid, 1);
-			//console.log("Removed asteroid.");
-		};
-		GAME.asteroids.moveAsteroid = function(asteroid, x, z)
-		{
-			asteroid.position.x += x;
-			asteroid.position.z += z;
+			if(	GAME.repairNode.node.position.x < -30 || GAME.repairNode.node.position.x > 30)
+			{
+				GAME.repairNode.node.position.x = (-GAME.repairNode.node.position.x);
+			}
+			else if(GAME.repairNode.node.position.z < -30 || GAME.repairNode.node.position.z > 30 )
+			{
+				GAME.repairNode.node.position.z = (-GAME.repairNode.node.position.z);
+			}
 		};
 		GAME.setView = function()
 		{
@@ -334,6 +394,9 @@
 			/*************************************************************************/
 			GAME.asteroids.createField();	// Creates initial asteroid belt.
 			/*************************************************************************/
+			GAME.repairNode.create(GAME.moveSpeed / 4);
+			GAME.repairNode.add(GAME.moveSpeed / 4);	// Creates repair node.
+			/*************************************************************************/
 			render();						// The update loop.
 		}
 		function render()
@@ -349,18 +412,22 @@
 						GAME.asteroids.asteroidField[i].directionX * GAME.asteroids.asteroidField[i].speed,
 						GAME.asteroids.asteroidField[i].directionZ * GAME.asteroids.asteroidField[i].speed);
 				}
+				GAME.repairNode.move();
+				console.log(GAME.repairNode.node.position);
 				if(GAME.updateCounter % 2 == 0) GAME.collisionCheck();
 				if(GAME.updateCounter % 60 == 0)
 				{
 					GAME.score += 10;
 					document.getElementById("score").innerHTML = GAME.score;
 				}
-				if(GAME.updateCounter % 120 == 0) GAME.asteroids.checkOutOfBounds();
+				if(GAME.updateCounter % 120 == 0) GAME.checkOutOfBounds();
 				if(GAME.updateCounter % 1800 == 0)
 				{
 					GAME.moveSpeed += 0.001;
 					for(var j = 0; j < 8; j++) GAME.asteroids.addAsteroid(0.02, GAME.moveSpeed);
 					for(var k = 0; k < 6; k++) GAME.asteroids.removeAsteroid(0);
+					GAME.repairNode.remove();
+					GAME.repairNode.add(GAME.moveSpeed / 4);
 				}
 				keyPressed(); // Player presses a keyboard key.
 			}
