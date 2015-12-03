@@ -12,3 +12,5 @@ When hit, barriers change colors from green to yellow to red. When a red barrier
 Goal of the game is to stay alive (player sphere remains unscathed) for as long as possible.</br></br>
 
 Score is determined by a timer. Every second alive adds a point to total score.
+
+Floating blue spheres are the repair nodes. Contact a barrier to this, and it will repair.
