@@ -1,7 +1,6 @@
 var GAME =
 {
 	state: "LOADING",
-	score: 0,
 	updateCounter: 0,
 	moveSpeed: 0.007,
 	ringSelected: 1,
@@ -9,6 +8,7 @@ var GAME =
 	ASTROMAX: 35,
 	ringChange: false,
 	criticalVariables: [],
+	player: null,
 	asteroids: null,
 	renderer: [],
 	barriers: [],
@@ -18,6 +18,7 @@ var GAME =
 	scene: null,
 	mouseX: 0 };
 
+GAME.player = { initials: "", score: 0 };
 GAME.asteroids = { asteroidField: [] };
 GAME.asteroids.createField = function()
 {
@@ -126,21 +127,21 @@ GAME.checkOutOfBounds = function()
 		if(	GAME.asteroids.asteroidField[i].astro.position.x < -30 ||
 			GAME.asteroids.asteroidField[i].astro.position.x > 30)
 		{
-			GAME.asteroids.asteroidField[i].astro.position.x = (-GAME.asteroids.asteroidField[i].astro.position.x);
+			GAME.asteroids.asteroidField[i].astro.position.x = (-0.95 * GAME.asteroids.asteroidField[i].astro.position.x);
 		}
 		else if(GAME.asteroids.asteroidField[i].astro.position.z < -30 ||
 				GAME.asteroids.asteroidField[i].astro.position.z > 30 )
 		{
-			GAME.asteroids.asteroidField[i].astro.position.z = (-GAME.asteroids.asteroidField[i].astro.position.z);
+			GAME.asteroids.asteroidField[i].astro.position.z = (-0.95 * GAME.asteroids.asteroidField[i].astro.position.z);
 		}
 	}
 	if(	GAME.repairNode.node.position.x < -30 || GAME.repairNode.node.position.x > 30)
 	{
-		GAME.repairNode.node.position.x = (-GAME.repairNode.node.position.x);
+		GAME.repairNode.node.position.x = (-0.95 * GAME.repairNode.node.position.x);
 	}
 	else if(GAME.repairNode.node.position.z < -30 || GAME.repairNode.node.position.z > 30 )
 	{
-		GAME.repairNode.node.position.z = (-GAME.repairNode.node.position.z);
+		GAME.repairNode.node.position.z = (-0.95 * GAME.repairNode.node.position.z);
 	}
 };
 GAME.setView = function()
@@ -175,6 +176,7 @@ GAME.createPlayerCenter = function()
 	var circleGeo = new THREE.CylinderGeometry(1, 1, 0.1);
 	var circleMat = new THREE.MeshBasicMaterial({color: 0x00FFFF});
 	var circle = new THREE.Mesh(circleGeo, circleMat);
+	circle.position.set(0, 0, 0);
 	circle.name = "Player";
 	GAME.criticalVariables.push(circle);
 	GAME.scene.add(circle);
@@ -409,8 +411,8 @@ function render()
 		if(GAME.updateCounter % 2 == 0) GAME.collisionCheck();
 		if(GAME.updateCounter % 60 == 0)
 		{
-			GAME.score += 10;
-			document.getElementById("score").innerHTML = GAME.score;
+			GAME.player.score += 10;
+			document.getElementById("score").innerHTML = GAME.player.score;
 		}
 		if(GAME.updateCounter % 120 == 0) GAME.checkOutOfBounds();
 		if(GAME.updateCounter % 1800 == 0)
@@ -439,14 +441,20 @@ function render()
 				GAME.repairNode.add(GAME.moveSpeed / 4);
 			}
 		}
+		if(GAME.updateCounter % 45000 == 0)
+		{
+			GAME.updateCounter = 0;
+		}
 		keyPressed(); // Player presses a keyboard key.
 	}
 	else if(GAME.state == "GAME OVER")
 	{
+		var finalScore = (GAME.player.score + (100*GAME.barriers.length));
 		console.log("Game has ended.");
 		console.log("Barriers remaining: " + GAME.barriers.length);
-		console.log("Final score is score + (100 * remaining barriers): " + (GAME.score + (100*GAME.barriers.length)));
-		document.getElementById("score").innerHTML = GAME.score + " + (" + GAME.barriers.length + " * 100) = " + (GAME.score + (100 * GAME.barriers.length));
+		console.log("Final score is score + (100 * remaining barriers): " + finalScore);
+		document.getElementById("score").innerHTML = GAME.player.score + " + (" + GAME.barriers.length + " * 100) = " + (GAME.player.score + (100 * GAME.barriers.length));
+		sendScore("WRF", finalScore);
 		return;
 	}
 	GAME.renderer.render( GAME.scene, GAME.camera );
