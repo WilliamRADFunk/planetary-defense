@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" prefix="og: http://ogp.me/ns#">
 <head>
 	<title>Planetary Defense</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -26,6 +27,20 @@
 <body>
 	<div id="mainview"></div>
 	<div id="scoreboard"><h1>SCORE</h1><p id="score">0</p></div>
+	<div id="player-initials">
+		Points: <label id="points">0</label>
+		</br>
+		Barrier Points: <label id="barriers">0</label> * 100 = <label id="barrier-points">0</label>
+		</br>
+		Total Score: <label id="final-score">0</label>
+		</br>
+		</br>
+		<h2>ENTER YOUR INITIALS:</h2>
+		<form>
+			<input id="p-initials" type="text" placeholder="WRF">
+			<button onclick="GAME.enterInitials()">SUBMIT</button>
+		</form>
+	</div>
 </body>
 <script>window.onload = init;</script>
 </html>

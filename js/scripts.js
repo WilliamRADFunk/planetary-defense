@@ -212,6 +212,14 @@ GAME.removeBarrier = function(barrier)
 	GAME.scene.remove(GAME.barriers[barrier]);
 	GAME.barriers.splice(barrier, 1);
 };
+GAME.enterInitials = function()
+{
+	var finalScore = (GAME.player.score + (100*GAME.barriers.length));
+	var initials = document.getElementById("p-initials").value;
+	console.log(initials);
+	document.getElementById("player-initials").style.display = "none";
+	sendScore(initials, finalScore);
+}
 GAME.registerListeners = function()
 {
 	window.addEventListener( 'resize', GAME.onWindowResize, false);
@@ -450,11 +458,12 @@ function render()
 	else if(GAME.state == "GAME OVER")
 	{
 		var finalScore = (GAME.player.score + (100*GAME.barriers.length));
-		console.log("Game has ended.");
-		console.log("Barriers remaining: " + GAME.barriers.length);
-		console.log("Final score is score + (100 * remaining barriers): " + finalScore);
+		document.getElementById("points").innerHTML = GAME.player.score;
+		document.getElementById("barriers").innerHTML = GAME.barriers.length;
+		document.getElementById("barrier-points").innerHTML = (100 * GAME.barriers.length);
+		document.getElementById("final-score").innerHTML = finalScore;
 		document.getElementById("score").innerHTML = GAME.player.score + " + (" + GAME.barriers.length + " * 100) = " + (GAME.player.score + (100 * GAME.barriers.length));
-		sendScore("WRF", finalScore);
+		document.getElementById("player-initials").style.display = "block";
 		return;
 	}
 	GAME.renderer.render( GAME.scene, GAME.camera );
