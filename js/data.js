@@ -2,6 +2,8 @@
 function sendScore(initials, score)
 {
     if(initials == "") initials = "XXX";
+    else if(initials.length < 2) initials += "XX";
+    else if(initials.length < 2) initials += "X";
     var scorePackage =
     {
         initials: initials,
@@ -12,8 +14,8 @@ function sendScore(initials, score)
         type:'POST',
         url:'http://www.williamrobertfunk.com/applications/planetary-defense/actions/db.php',
         data: JSON.stringify(scorePackage),
-        contentType:'application/json; charset=utf-8',
-        dataType:'json',
+        contentType:'application/x-www-form-urlencoded; charset=utf-8',
+        dataType:'text',
         async: true,
         success:function()
         {
@@ -21,6 +23,7 @@ function sendScore(initials, score)
         },
         error:function(error)
         {
+            console.log(error);
             console.log(error.responseText);
             console.log(error.status);
             console.log(error.statusText);

@@ -216,9 +216,8 @@ GAME.enterInitials = function()
 {
 	var finalScore = (GAME.player.score + (100*GAME.barriers.length));
 	var initials = document.getElementById("p-initials").value;
-	console.log(initials);
-	document.getElementById("player-initials").style.display = "none";
 	sendScore(initials, finalScore);
+	document.getElementById("player-initials").style.display = "none";
 }
 GAME.registerListeners = function()
 {
@@ -318,6 +317,18 @@ GAME.onDocumentTouchMove = function( event )
 }
 GAME.collisionCheck = function()
 {
+	for(var k = 0; k < GAME.asteroids.asteroidField.length; k++)
+	{
+		if( ((GAME.asteroids.asteroidField[k].astro.position.x >= GAME.criticalVariables[0].position.x-1) &&
+			 (GAME.asteroids.asteroidField[k].astro.position.x <= GAME.criticalVariables[0].position.x+1)) &&
+			((GAME.asteroids.asteroidField[k].astro.position.z >= GAME.criticalVariables[0].position.z-1) &&
+			 (GAME.asteroids.asteroidField[k].astro.position.z <= GAME.criticalVariables[0].position.z+1)) )
+		{
+			document.getElementById("player-initials").style.display = "block";
+			GAME.state = "GAME OVER";
+			return;
+		}
+	}
 	for(var i = 0; i < GAME.barriers.length; i++)
 	{
 		var vector = new THREE.Vector3();
@@ -334,14 +345,6 @@ GAME.collisionCheck = function()
 		}
 		for(var j = 0; j < GAME.asteroids.asteroidField.length; j++)
 		{
-			if( ((GAME.asteroids.asteroidField[j].astro.position.x >= GAME.criticalVariables[0].position.x-1) &&
-				 (GAME.asteroids.asteroidField[j].astro.position.x <= GAME.criticalVariables[0].position.x+1)) &&
-				((GAME.asteroids.asteroidField[j].astro.position.z >= GAME.criticalVariables[0].position.z-1) &&
-				 (GAME.asteroids.asteroidField[j].astro.position.z <= GAME.criticalVariables[0].position.z+1)) )
-			{
-				GAME.state = "GAME OVER";
-				return;
-			}
 			if( ((GAME.asteroids.asteroidField[j].astro.position.x >= vector.x-0.9) &&
 				 (GAME.asteroids.asteroidField[j].astro.position.x <= vector.x+0.9)) &&
 				((GAME.asteroids.asteroidField[j].astro.position.z >= vector.z-0.9) &&
@@ -458,13 +461,12 @@ function render()
 	else if(GAME.state == "GAME OVER")
 	{
 		var finalScore = (GAME.player.score + (100*GAME.barriers.length));
+		document.removeEventListener( 'mousedown', GAME.onDocumentMouseDown );
 		document.getElementById("points").innerHTML = GAME.player.score;
 		document.getElementById("barriers").innerHTML = GAME.barriers.length;
 		document.getElementById("barrier-points").innerHTML = (100 * GAME.barriers.length);
 		document.getElementById("final-score").innerHTML = finalScore;
-		document.getElementById("score").innerHTML = GAME.player.score + " + (" + GAME.barriers.length + " * 100) = " + (GAME.player.score + (100 * GAME.barriers.length));
-		document.getElementById("player-initials").style.display = "block";
-		return;
+		document.getElementById("score").innerHTML = finalScore;
 	}
 	GAME.renderer.render( GAME.scene, GAME.camera );
 	requestAnimationFrame( render );

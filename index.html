@@ -26,21 +26,21 @@
 </head>
 <body>
 	<div id="mainview"></div>
-	<div id="scoreboard"><h1>SCORE</h1><p id="score">0</p></div>
 	<div id="player-initials">
-		Points: <label id="points">0</label>
+		<strong>Points: </strong><label id="points">0</label>
 		</br>
-		Barrier Points: <label id="barriers">0</label> * 100 = <label id="barrier-points">0</label>
+		<strong>Barrier Points: </strong><label id="barriers">0</label><label> * 100 = </label><label id="barrier-points">0</label>
 		</br>
-		Total Score: <label id="final-score">0</label>
+		<strong>Total Score: </strong><label id="final-score">0</label>
 		</br>
 		</br>
 		<h2>ENTER YOUR INITIALS:</h2>
 		<form>
-			<input id="p-initials" type="text" placeholder="WRF">
-			<button onclick="GAME.enterInitials()">SUBMIT</button>
+			<input id="p-initials" type="text" maxlength="3" placeholder="WRF">
+			<button onclick="GAME.enterInitials(); return false;">SUBMIT</button>
 		</form>
 	</div>
+	<div id="scoreboard"><h1>SCORE</h1><p id="score">0</p></div>
 </body>
 <script>window.onload = init;</script>
 </html>
