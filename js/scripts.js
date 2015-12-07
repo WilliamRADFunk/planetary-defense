@@ -163,16 +163,32 @@ GAME.setView = function()
 GAME.populateTopTen = function()
 {
 	var scores = getScores();
-	document.getElementById("name1").innerHTML = scores.scores[0].initials;
-	document.getElementById("score1").innerHTML = scores.scores[0].score;
-	document.getElementById("name2").innerHTML = scores.scores[1].initials;
-	document.getElementById("score2").innerHTML = scores.scores[1].score;
-	document.getElementById("name3").innerHTML = scores.scores[2].initials;
-	document.getElementById("score3").innerHTML = scores.scores[2].score;
-	document.getElementById("name4").innerHTML = scores.scores[3].initials;
-	document.getElementById("score4").innerHTML = scores.scores[3].score;
-	document.getElementById("name5").innerHTML = scores.scores[4].initials;
-	document.getElementById("score5").innerHTML = scores.scores[4].score;
+	if(scores)
+	{
+		document.getElementById("name1").innerHTML = scores.scores[0].initials;
+		document.getElementById("score1").innerHTML = scores.scores[0].score;
+		document.getElementById("name2").innerHTML = scores.scores[1].initials;
+		document.getElementById("score2").innerHTML = scores.scores[1].score;
+		document.getElementById("name3").innerHTML = scores.scores[2].initials;
+		document.getElementById("score3").innerHTML = scores.scores[2].score;
+		document.getElementById("name4").innerHTML = scores.scores[3].initials;
+		document.getElementById("score4").innerHTML = scores.scores[3].score;
+		document.getElementById("name5").innerHTML = scores.scores[4].initials;
+		document.getElementById("score5").innerHTML = scores.scores[4].score;
+	}
+	else
+	{
+		document.getElementById("name1").innerHTML = "XXX";
+		document.getElementById("score1").innerHTML = "000";
+		document.getElementById("name2").innerHTML = "XXX";
+		document.getElementById("score2").innerHTML = "000";
+		document.getElementById("name3").innerHTML = "XXX";
+		document.getElementById("score3").innerHTML = "000";
+		document.getElementById("name4").innerHTML = "XXX";
+		document.getElementById("score4").innerHTML = "000";
+		document.getElementById("name5").innerHTML = "XXX";
+		document.getElementById("score5").innerHTML = "000";
+	}
 }
 GAME.createRenderers = function()
 {
@@ -482,6 +498,7 @@ function render()
 	{
 		var finalScore = (GAME.player.score + (100*GAME.barriers.length));
 		document.removeEventListener( 'mousedown', GAME.onDocumentMouseDown );
+		document.removeEventListener( 'touchstart', GAME.onDocumentTouchStart );
 		document.getElementById("points").innerHTML = GAME.player.score;
 		document.getElementById("barriers").innerHTML = GAME.barriers.length;
 		document.getElementById("barrier-points").innerHTML = (100 * GAME.barriers.length);

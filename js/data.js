@@ -1,9 +1,9 @@
 /* Inserts the new score, identified by the user's initials (arcade-style) */
 function sendScore(initials, score)
 {
-    if(initials == "") initials = "XXX";
-    else if(initials.length < 2) initials += "XX";
-    else if(initials.length < 2) initials += "X";
+    if(initials == "") initials = "___";
+    else if(initials.length < 2) initials += "__";
+    else if(initials.length < 2) initials += "_";
     var scorePackage =
     {
         initials: initials,
