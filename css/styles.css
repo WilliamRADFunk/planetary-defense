@@ -33,25 +33,42 @@ body
 }
 #scoreboard
 {
+	height: 70px;
+	top: 0px;
+}
+#scoreboard,
+#top-ten
+{
 	background-color: #CCCCCC;
 	display: block;
 	position: absolute;
-	height: 70px;
-	opacity: 0.5;
 	left: 0px;
-	top: 0px;
+	opacity: 0.5;
 	width: 20%;
 	z-index: 1000;
 }
-#scoreboard h1
+#scoreboard h1,
+#top-ten h1
 {
 	color: #CC0000;
 	margin: 10px auto;
 	text-align: center;
 	text-decoration: underline;
 }
-#scoreboard p
+#scoreboard p,
+#top-ten span
 {
 	color: #CC0000;
+	text-align: center;
+}
+#top-ten span
+{
+	text-transform: uppercase;
+}
+#top-ten
+{
+	bottom: 0px;
+	left: 0px;
+	height: 140px;
 	text-align: center;
 }

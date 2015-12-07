@@ -158,6 +158,20 @@ GAME.setView = function()
 	document.body.style.height = (window.innerHeight) + "px";
 	GAME.windowHalfX = window.innerWidth / 2;
 }
+GAME.populateTopTen = function()
+{
+	var scores = getScores();
+	document.getElementById("name1").innerHTML = scores.scores[0].initials;
+	document.getElementById("score1").innerHTML = scores.scores[0].score;
+	document.getElementById("name2").innerHTML = scores.scores[1].initials;
+	document.getElementById("score2").innerHTML = scores.scores[1].score;
+	document.getElementById("name3").innerHTML = scores.scores[2].initials;
+	document.getElementById("score3").innerHTML = scores.scores[2].score;
+	document.getElementById("name4").innerHTML = scores.scores[3].initials;
+	document.getElementById("score4").innerHTML = scores.scores[3].score;
+	document.getElementById("name5").innerHTML = scores.scores[4].initials;
+	document.getElementById("score5").innerHTML = scores.scores[4].score;
+}
 GAME.createRenderers = function()
 {
 	if(window.WebGLRenderingContext) GAME.renderer = new THREE.WebGLRenderer();
@@ -377,6 +391,8 @@ function init()
 {
 	/*************************************************************************/
 	GAME.setView();					// Sizes the game window.
+	/*************************************************************************/
+	GAME.populateTopTen();			// Retrieves and shows top-ten scores.
 	/*************************************************************************/
 	GAME.keyboard = new THREEx.KeyboardState();
 	/*************************************************************************/
