@@ -34,6 +34,7 @@ body
 #scoreboard
 {
 	height: 70px;
+	left: 0px;
 	top: 0px;
 }
 #scoreboard,
@@ -42,7 +43,6 @@ body
 	background-color: #CCCCCC;
 	display: block;
 	position: absolute;
-	left: 0px;
 	opacity: 0.5;
 	width: 20%;
 	z-index: 1000;
@@ -68,7 +68,7 @@ body
 #top-ten
 {
 	bottom: 0px;
-	left: 0px;
 	height: 140px;
+	right: 0px;
 	text-align: center;
 }
