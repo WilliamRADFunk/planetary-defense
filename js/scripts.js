@@ -34,7 +34,7 @@ GAME.asteroids.addAsteroid = function(size, speed)
 		directionX: null,
 		directionZ: null,
 		astro: null
-	}
+	};
 	asteroid.size = size ? size : 0.2;
 	asteroid.speed = speed ? speed : 0.001;
 
@@ -88,7 +88,7 @@ GAME.repairNode.create = function(speed)
 	GAME.repairNode.node.position.set(GAME.repairNode.node.x, 0, GAME.repairNode.node.z);
 	GAME.scene.add(GAME.repairNode.node);
 	GAME.repairNode.node.material.visible = false;
-}
+};
 GAME.repairNode.add = function(speed)
 {
 	if(Math.random() > 0.5) GAME.repairNode.x = Math.floor((Math.random() * 20) + 15);
@@ -104,12 +104,12 @@ GAME.repairNode.add = function(speed)
 	GAME.repairNode.node.position.z = GAME.repairNode.z;
 	GAME.repairNode.speed = speed;
 	GAME.repairNode.node.material.visible = true;
-}
+};
 GAME.repairNode.move = function()
 {
 	GAME.repairNode.node.position.x += GAME.repairNode.directionX * GAME.repairNode.speed;
 	GAME.repairNode.node.position.z += GAME.repairNode.directionZ * GAME.repairNode.speed;
-}
+};
 GAME.repairNode.remove = function()
 {
 	GAME.repairNode.node.position.x = 100;
@@ -119,7 +119,7 @@ GAME.repairNode.remove = function()
 	GAME.repairNode.directionX = 0;
 	GAME.repairNode.directionZ = 0;
 	GAME.repairNode.node.material.visible = false;
-}
+};
 GAME.checkOutOfBounds = function()
 {
 	for(var i = 0; i < GAME.asteroids.asteroidField.length; i++)
@@ -159,10 +159,9 @@ GAME.setView = function()
 	document.body.style.width = (window.innerWidth ) + "px";
 	document.body.style.height = (window.innerHeight) + "px";
 	GAME.windowHalfX = window.innerWidth / 2;
-}
-GAME.populateTopTen = function()
+};
+GAME.populateTopTen = function(scores)
 {
-	var scores = getScores();
 	if(scores)
 	{
 		document.getElementById("name1").innerHTML = scores.scores[0].initials;
@@ -189,7 +188,7 @@ GAME.populateTopTen = function()
 		document.getElementById("name5").innerHTML = "XXX";
 		document.getElementById("score5").innerHTML = "000";
 	}
-}
+};
 GAME.createRenderers = function()
 {
 	if(window.WebGLRenderingContext) GAME.renderer = new THREE.WebGLRenderer();
@@ -250,7 +249,7 @@ GAME.enterInitials = function()
 	var initials = document.getElementById("p-initials").value;
 	sendScore(initials, finalScore);
 	document.getElementById("player-initials").style.display = "none";
-}
+};
 GAME.registerListeners = function()
 {
 	window.addEventListener( 'resize', GAME.onWindowResize, false);
@@ -291,23 +290,23 @@ GAME.loadSounds = function()
 	GAME.soundFx_1 = new Audio("assets/audio/End_Fx.mp3");
 	GAME.soundFx_2 = new Audio("assets/audio/Power_Failure.mp3");
 	GAME.soundFx_3 = new Audio("assets/audio/Metroid_Door.mp3");
-}
+};
 GAME.playSound = function(track)
 {
 	GAME.soundFx_1.pause();
 	GAME.soundFx_1.currentTime = 0;
 	GAME.soundFx_2.pause();
 	GAME.soundFx_2.currentTime = 0;
-	if(track == 0) GAME.soundFx_2.play();
-	else if(track == 1) GAME.soundFx_1.play();
-	else if(track == 2) GAME.soundFx_3.play();
-}
+	if(track === 0) GAME.soundFx_2.play();
+	else if(track === 1) GAME.soundFx_1.play();
+	else if(track === 2) GAME.soundFx_3.play();
+};
 GAME.onDocumentMouseDown = function( event )
 {
 	event.preventDefault();
 	document.addEventListener( 'mousemove', GAME.onDocumentMouseMove, false );
 	document.addEventListener( 'mouseup', GAME.onDocumentMouseUp, false );
-}
+};
 GAME.onDocumentMouseMove = function( event )
 {
 	var mouseXBefore = GAME.mouseX;
@@ -315,7 +314,7 @@ GAME.onDocumentMouseMove = function( event )
 	var posOrNeg = (GAME.mouseX > mouseXBefore) ? 1 : -1;
 	GAME.criticalVariables[0].rotation.y += (0.05 * posOrNeg); // player center.
 	GAME.criticalVariables[GAME.ringSelected].rotation.y += ((0.05 * posOrNeg) / GAME.ringSelected); // defensive ring.
-}
+};
 GAME.onDocumentMouseUp = function( event )
 {
 	document.removeEventListener( 'mousemove', GAME.onDocumentMouseMove, false );
@@ -323,7 +322,7 @@ GAME.onDocumentMouseUp = function( event )
 	//console.log("Ring changed");
 	GAME.ringSelected++; // player chose a different ring to rotate.
 	if(GAME.ringSelected > GAME.RINGMAX) GAME.ringSelected = 1;
-}
+};
 GAME.onDocumentTouchStart = function( event )
 {
 	//console.log("Touch start");
@@ -334,8 +333,7 @@ GAME.onDocumentTouchStart = function( event )
 		GAME.ringSelected++; // player chose a different ring to rotate.
 		if(GAME.ringSelected > GAME.RINGMAX) GAME.ringSelected = 1;
 	}
-}
-
+};
 GAME.onDocumentTouchMove = function( event )
 {
 	//console.log("Touch move");
@@ -348,7 +346,7 @@ GAME.onDocumentTouchMove = function( event )
 		GAME.criticalVariables[0].rotation.y += (0.05 * posOrNeg); // player center.
 		GAME.criticalVariables[GAME.ringSelected].rotation.y += ((0.05 * posOrNeg) / GAME.ringSelected); // defensive ring.
 	}
-}
+};
 GAME.collisionCheck = function()
 {
 	for(var k = 0; k < GAME.asteroids.asteroidField.length; k++)
@@ -412,7 +410,7 @@ function init()
 	/*************************************************************************/
 	GAME.setView();					// Sizes the game window.
 	/*************************************************************************/
-	GAME.populateTopTen();			// Retrieves and shows top-ten scores.
+	getScores();					// Retrieves and shows top-ten scores.
 	/*************************************************************************/
 	GAME.keyboard = new THREEx.KeyboardState();
 	/*************************************************************************/
@@ -455,14 +453,14 @@ function render()
 				GAME.asteroids.asteroidField[i].directionZ * GAME.asteroids.asteroidField[i].speed);
 		}
 		GAME.repairNode.move();
-		if(GAME.updateCounter % 2 == 0) GAME.collisionCheck();
-		if(GAME.updateCounter % 60 == 0)
+		if(GAME.updateCounter % 2 === 0) GAME.collisionCheck();
+		if(GAME.updateCounter % 60 === 0)
 		{
 			GAME.player.score += 10;
 			document.getElementById("score").innerHTML = GAME.player.score;
 		}
-		if(GAME.updateCounter % 120 == 0) GAME.checkOutOfBounds();
-		if(GAME.updateCounter % 1800 == 0)
+		if(GAME.updateCounter % 120 === 0) GAME.checkOutOfBounds();
+		if(GAME.updateCounter % 1800 === 0)
 		{
 			GAME.moveSpeed += 0.001;
 			var delCount = 0;
@@ -488,7 +486,7 @@ function render()
 				GAME.repairNode.add(GAME.moveSpeed / 4);
 			}
 		}
-		if(GAME.updateCounter % 45000 == 0)
+		if(GAME.updateCounter % 45000 === 0)
 		{
 			GAME.updateCounter = 0;
 		}

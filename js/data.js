@@ -1,7 +1,7 @@
 /* Inserts the new score, identified by the user's initials (arcade-style) */
 function sendScore(initials, score)
 {
-    if(initials == "") initials = "___";
+    if(initials === "") initials = "___";
     else if(initials.length < 2) initials += "__";
     else if(initials.length < 2) initials += "_";
     var scorePackage =
@@ -38,11 +38,11 @@ function getScores()
         type:'GET',
         url:'http://www.williamrobertfunk.com/applications/planetary-defense/actions/getScores.php',
         dataType:'json',
-        async: false,
+        async: true,
         success:function(responseData) {
             console.log("Success");
             console.log(responseData);
-            scores = responseData;
+            GAME.populateTopTen(responseData);
         },
         error:function(error)
         {
@@ -53,5 +53,4 @@ function getScores()
             console.log(error.statusText);
         }
     });
-    return( scores );
 }

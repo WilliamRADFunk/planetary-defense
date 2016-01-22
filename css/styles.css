@@ -55,14 +55,24 @@ body
 	text-align: center;
 	text-decoration: underline;
 }
-#scoreboard p,
-#top-ten span
+#scoreboard p
 {
 	color: #CC0000;
 	text-align: center;
 }
+#scores
+{
+	margin-left: auto;
+	margin-right: auto;
+	width: 50%;
+}
+#top-ten p
+{
+	display: block;
+}
 #top-ten span
 {
+	color: #CC0000;
 	text-transform: uppercase;
 }
 #top-ten
@@ -70,5 +80,31 @@ body
 	bottom: 0px;
 	height: 140px;
 	right: 0px;
-	text-align: center;
+	text-align: justify;
+}
+@media (max-width: 1000px)
+{
+	body
+	{
+		font-size: 10px;
+	}
+	#scores
+	{
+		width: 80%;
+	}
+	#top-ten
+	{
+		height: 85px;
+	}
+}
+@media (max-width: 500px)
+{
+	body
+	{
+		font-size: 8px;
+	}
+	#scores
+	{
+		width: 90%;
+	}
 }
