@@ -207,7 +207,7 @@ GAME.attachViewsToHTML = function()
 };
 GAME.createPlayerCenter = function()
 {
-	var circleGeo = new THREE.CylinderGeometry(1, 1, 0.1);
+	var circleGeo = new THREE.CylinderGeometry(1, 1, 0.1, 64);
 	var circleMat = new THREE.MeshBasicMaterial({color: 0x00FFFF});
 	var circle = new THREE.Mesh(circleGeo, circleMat);
 	circle.position.set(0, 0, 0);
@@ -221,6 +221,18 @@ GAME.createRingsAndBarriers = function()
 	{
 		var ring = new THREE.Object3D();
 		ring.name = "Ring " + j;
+		// var circle = new RingGeometry(j * 2, j * 2, 30);
+		// var circleMat = new THREE.MeshBasicMaterial({color: 0xFF69B4});
+		// var circleMesh = new THREE.Mesh(circle, circleMat);
+		// ring.add(circleMesh);
+
+		var circleGeometry = new THREE.RingGeometry((j * 2) + 0.25, (j * 2) + 0.5, 120, 0, 0, Math.PI * 2);
+		var circle = new THREE.Mesh(circleGeometry, new THREE.MeshBasicMaterial({color: 0xFF69B4, wireframe: true}));
+		circle.position.set(0, -5, 0);
+		circle.rotation.set(90, 0, 0);
+		circle.name = 'ring-frame-' + j;
+		ring.add(circle);
+		// GAME.scene.add(circle);
 		for(var i = 0; i < (4 * j); i++)
 		{
 			var x_coord = (j * 2) * Math.cos( i * (Math.PI / (2 * j)) );
@@ -237,6 +249,7 @@ GAME.createRingsAndBarriers = function()
 		GAME.criticalVariables.push(ring);
 		GAME.scene.add(ring);
 	}
+	GAME.changeRingColors();
 };
 GAME.removeBarrier = function(barrier)
 {
@@ -328,6 +341,7 @@ GAME.onDocumentMouseUp = function( event )
 	//console.log("Ring changed");
 	GAME.ringSelected++; // player chose a different ring to rotate.
 	if(GAME.ringSelected > GAME.RINGMAX) GAME.ringSelected = 1;
+	GAME.changeRingColors();
 };
 GAME.onDocumentTouchStart = function( event )
 {
@@ -338,7 +352,15 @@ GAME.onDocumentTouchStart = function( event )
 		//console.log("Ring changed");
 		GAME.ringSelected++; // player chose a different ring to rotate.
 		if(GAME.ringSelected > GAME.RINGMAX) GAME.ringSelected = 1;
+		GAME.changeRingColors();
 	}
+};
+GAME.changeRingColors = function() {
+	for(var i = 1; i < GAME.criticalVariables.length; i++)
+	{
+		GAME.criticalVariables[i].children[0].material.color.setHex(0xFF69B4);
+	}
+	GAME.criticalVariables[GAME.ringSelected].children[0].material.color.setHex(0x00FFFF);
 };
 GAME.onDocumentTouchMove = function( event )
 {
@@ -515,13 +537,13 @@ function keyPressed()
 {
 	if( GAME.keyboard.pressed("RIGHT") || GAME.keyboard.pressed("D") )
 	{
-		GAME.criticalVariables[0].rotation.y -= 0.1; // player center.
-		GAME.criticalVariables[GAME.ringSelected].rotation.y -= (0.1 / GAME.ringSelected); // defensive ring.
+		GAME.criticalVariables[0].rotation.y += 0.1; // player center.
+		GAME.criticalVariables[GAME.ringSelected].rotation.y += (0.1 / GAME.ringSelected); // defensive ring.
 	}
 	else if( GAME.keyboard.pressed("LEFT") || GAME.keyboard.pressed("A") )
 	{
-		GAME.criticalVariables[0].rotation.y += 0.1; // player center.
-		GAME.criticalVariables[GAME.ringSelected].rotation.y += (0.1 / GAME.ringSelected); // defensive ring.
+		GAME.criticalVariables[0].rotation.y -= 0.1; // player center.
+		GAME.criticalVariables[GAME.ringSelected].rotation.y -= (0.1 / GAME.ringSelected); // defensive ring.
 	}
 	else if( GAME.keyboard.pressed("SPACE") )
 	{
@@ -531,6 +553,7 @@ function keyPressed()
 			GAME.ringChange = true;
 		}
 		if(GAME.ringSelected > GAME.RINGMAX) GAME.ringSelected = 1;
+		GAME.changeRingColors();
 	}
 	else GAME.ringChange = false;
 }
