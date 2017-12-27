@@ -96,10 +96,13 @@ GAME.repairNode.add = function(speed)
 	if(Math.random() > 0.5) GAME.repairNode.z = Math.floor((Math.random() * 20) + 15);
 	else GAME.repairNode.z = -Math.floor((Math.random() * 20) + 15);
 	
-	if(Math.random() > 0.5) GAME.repairNode.directionX = Math.floor((Math.random() * 20) + 5);
-	else GAME.repairNode.directionX = -Math.floor((Math.random() * 20) + 5);
-	if(Math.random() > 0.5) GAME.repairNode.directionZ = Math.floor((Math.random() * 20) + 5);
-	else GAME.repairNode.directionZ = -Math.floor((Math.random() * 20) + 5);
+	// if(Math.random() > 0.5) GAME.repairNode.directionX = Math.floor((Math.random() * 20) + 5);
+	// else GAME.repairNode.directionX = -Math.floor((Math.random() * 20) + 5);
+	// if(Math.random() > 0.5) GAME.repairNode.directionZ = Math.floor((Math.random() * 20) + 5);
+	// else GAME.repairNode.directionZ = -Math.floor((Math.random() * 20) + 5);
+
+	GAME.repairNode.directionX = -GAME.repairNode.x;
+	GAME.repairNode.directionZ = -GAME.repairNode.z;
 	GAME.repairNode.node.position.x = GAME.repairNode.x;
 	GAME.repairNode.node.position.z = GAME.repairNode.z;
 	GAME.repairNode.speed = speed;
@@ -395,8 +398,7 @@ GAME.collisionCheck = function()
 				else if(GAME.barriers[i].material.color.getHex() == 0xFF0000)
 				{
 					GAME.removeBarrier(i);
-					GAME.playSound(2);
-					GAME.soundFx_2.play();
+					GAME.playSound(0);
 					return;
 				}
 				else
