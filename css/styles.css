@@ -16,20 +16,21 @@ body
 }
 #player-initials
 {
-	background-color: #FFFFFF;
+	background-color: #AAAAAA;
 	display: none;
 	position: absolute;
-	height: 99%;
-	left: 0px;
-	padding-top: 30px;
+	height: 40%;
+	left: 35%;
+	opacity: 0.9;
+	padding-top: 20px;
 	text-align: center;
-	top: 0px;
-	width: 99%;
+	top: 30%;
+	width: 30%;
 	z-index: 1010;
 }
 #player-initials label
 {
-	color: #DD0000;
+	color: #CC0000;
 }
 #scoreboard
 {
@@ -38,14 +39,27 @@ body
 	top: 0px;
 }
 #scoreboard,
-#top-ten
+#top-ten,
+#mobile-instructions,
+#desktop-instructions
 {
-	background-color: #CCCCCC;
+	background-color: #AAAAAA;
 	display: block;
 	position: absolute;
 	opacity: 0.5;
 	width: 20%;
 	z-index: 1000;
+}
+#mobile-instructions,
+#desktop-instructions
+{
+	height: 50px;
+	left: 0px;
+	bottom: 0px;
+	color: #CC0000;
+	opacity: 1;
+	text-align: center;
+	padding-top: 10px;
 }
 #scoreboard h1,
 #top-ten h1

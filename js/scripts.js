@@ -148,6 +148,51 @@ GAME.checkOutOfBounds = function()
 		GAME.repairNode.node.position.z = (-0.95 * GAME.repairNode.node.position.z);
 	}
 };
+GAME.restart = function()
+{
+	Game.state = "LOADING";
+	Game.updateCounter = 0;
+	Game.moveSpeed = 0.007;
+	Game.ringSelected = 1;
+	Game.RINGMAX = 3;
+	Game.ASTROMAX = 35;
+	Game.ringChange = false;
+	Game.criticalVariables = [];
+	Game.player = null;
+	Game.asteroids = null;
+	Game.renderer = [];
+	Game.barriers = [];
+	Game.camera = null;
+	Game.scene = null;
+	Game.timeoutID = null;
+	Game.mouseX = 0;
+
+	GAME.player = { initials: "", score: 0 };
+	GAME.asteroids = { asteroidField: [] };
+
+	getScores();					// Retrieves and shows top-ten scores.
+	/*************************************************************************/
+	GAME.scene = new THREE.Scene();	// Three.js scene (contains universe).
+	/*************************************************************************/
+	GAME.createRenderers();			// Creates all renderers for the scene.
+	/*************************************************************************/
+	GAME.scene.add(new THREE.AmbientLight(0x333333));
+	/*************************************************************************/
+	GAME.attachViewsToHTML();		// Attaches renderers to HTML.
+	/*************************************************************************/
+	GAME.createPlayerCenter();		// Creates the rotatable player's center.
+	/*************************************************************************/
+	GAME.createRingsAndBarriers();	// Creates player's defensive barriers.
+	/*************************************************************************/
+	GAME.loadCameras();				// Top-down viewpoint.
+	/*************************************************************************/
+	GAME.asteroids.createField();	// Creates initial asteroid belt.
+	/*************************************************************************/
+	GAME.repairNode.create(GAME.moveSpeed / 4);
+	GAME.repairNode.add(GAME.moveSpeed / 4);	// Creates repair node.
+	/*************************************************************************/
+	render();
+};
 GAME.setView = function()
 {
 	GAME.WIDTH = window.innerWidth * 0.99;
@@ -156,6 +201,20 @@ GAME.setView = function()
 	else GAME.WIDTH = GAME.HEIGHT;
 	document.getElementById("mainview").style.left = (((window.innerWidth * 0.99) - GAME.WIDTH) / 2) + "px";
 	document.getElementById("scoreboard").style.left = (((window.innerWidth * 0.99) - GAME.WIDTH) / 2) + "px";
+	document.getElementById("mobile-instructions").style.left = (((window.innerWidth * 0.99) - GAME.WIDTH) / 2) + "px";
+	document.getElementById("mobile-instructions").style.width = GAME.WIDTH + "px";
+	document.getElementById("desktop-instructions").style.left = (((window.innerWidth * 0.99) - GAME.WIDTH) / 2) + "px";
+	document.getElementById("desktop-instructions").style.width = GAME.WIDTH + "px";
+	if(window.innerWidth < 767)
+	{
+		document.getElementById("desktop-instructions").style.display = "none";
+		document.getElementById("mobile-instructions").style.display = "block";
+	}
+	else
+	{
+		document.getElementById("mobile-instructions").style.display = "none";
+		document.getElementById("desktop-instructions").style.display = "block";
+	}
 	document.getElementById("top-ten").style.right = (((window.innerWidth * 1.01) - GAME.WIDTH) / 2) + "px";
 	document.getElementById("mainview").style.top = (((window.innerHeight * 0.99) - GAME.HEIGHT) / 2) + "px";
 	document.getElementById("scoreboard").style.top = (((window.innerHeight * 0.99) - GAME.HEIGHT) / 2) + "px";
@@ -222,10 +281,6 @@ GAME.createRingsAndBarriers = function()
 	{
 		var ring = new THREE.Object3D();
 		ring.name = "Ring " + j;
-		// var circle = new RingGeometry(j * 2, j * 2, 30);
-		// var circleMat = new THREE.MeshBasicMaterial({color: 0xFF69B4});
-		// var circleMesh = new THREE.Mesh(circle, circleMat);
-		// ring.add(circleMesh);
 
 		var circleGeometry = new THREE.RingGeometry((j * 2) + 0.25, (j * 2) + 0.5, 120, 0, 0, Math.PI * 2);
 		var circle = new THREE.Mesh(circleGeometry, new THREE.MeshBasicMaterial({color: 0xFF69B4, wireframe: true}));
@@ -266,6 +321,7 @@ GAME.enterInitials = function()
 	var initials = document.getElementById("p-initials").value;
 	sendScore(initials, finalScore);
 	document.getElementById("player-initials").style.display = "none";
+	Game.restart();
 };
 GAME.registerListeners = function()
 {
@@ -278,6 +334,8 @@ GAME.onWindowResize = function()
 {
 	var WIDTH = window.innerWidth * 0.99;
 	var HEIGHT = window.innerHeight * 0.99;
+	document.getElementById("mainview").style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + "px";
+	document.getElementById("scoreboard").style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + "px";
 	if(WIDTH < HEIGHT) HEIGHT = WIDTH;
 	else WIDTH = HEIGHT;
 	GAME.renderer.setSize( WIDTH, HEIGHT );
@@ -285,6 +343,20 @@ GAME.onWindowResize = function()
 	GAME.camera.updateProjectionMatrix();
 	document.getElementById("mainview").style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + "px";
 	document.getElementById("scoreboard").style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + "px";
+	document.getElementById("mobile-instructions").style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + "px";
+	document.getElementById("mobile-instructions").style.width = WIDTH + "px";
+	document.getElementById("desktop-instructions").style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + "px";
+	document.getElementById("desktop-instructions").style.width = WIDTH + "px";
+	if(window.innerWidth < 767)
+	{
+		document.getElementById("desktop-instructions").style.display = "none";
+		document.getElementById("mobile-instructions").style.display = "block";
+	}
+	else
+	{
+		document.getElementById("mobile-instructions").style.display = "none";
+		document.getElementById("desktop-instructions").style.display = "block";
+	}
 	document.getElementById("top-ten").style.right = (((window.innerWidth * 1.01) - WIDTH) / 2) + "px";
 	document.getElementById("mainview").style.top = (((window.innerHeight * 0.99) - HEIGHT) / 2) + "px";
 	document.getElementById("scoreboard").style.top = (((window.innerHeight * 0.99) - HEIGHT) / 2) + "px";
@@ -387,6 +459,7 @@ GAME.collisionCheck = function()
 			 (GAME.asteroids.asteroidField[k].astro.position.z <= GAME.criticalVariables[0].position.z+1)) )
 		{
 			document.getElementById("player-initials").style.display = "block";
+			document.getElementById("player-initials").focus();
 			GAME.state = "GAME OVER";
 			return;
 		}
@@ -531,6 +604,7 @@ function render()
 		document.getElementById("barrier-points").innerHTML = (100 * GAME.barriers.length);
 		document.getElementById("final-score").innerHTML = finalScore;
 		document.getElementById("score").innerHTML = finalScore;
+		return;
 	}
 	GAME.renderer.render( GAME.scene, GAME.camera );
 	requestAnimationFrame( render );
