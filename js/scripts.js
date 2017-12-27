@@ -16,6 +16,7 @@ var GAME =
 	soundFx_2: null,
 	camera: null,
 	scene: null,
+	timeoutID: null,
 	mouseX: 0 };
 
 GAME.player = { initials: "", score: 0 };
@@ -271,7 +272,7 @@ GAME.registerListeners = function()
 	window.addEventListener( 'resize', GAME.onWindowResize, false);
 	document.addEventListener( 'mousedown', GAME.onDocumentMouseDown, false );
 	document.addEventListener( 'touchstart', GAME.onDocumentTouchStart, false );
-	document.addEventListener( 'touchmove', GAME.onDocumentTouchMove, false );
+	document.addEventListener( 'touchend', GAME.onDocumentTouchEnd, false );
 };
 GAME.onWindowResize = function()
 {
@@ -345,15 +346,29 @@ GAME.onDocumentMouseUp = function( event )
 };
 GAME.onDocumentTouchStart = function( event )
 {
-	//console.log("Touch start");
-	if ( event.touches.length === 1 )
+	event.preventDefault();
+	if ( event.touches.length === 2 )
 	{
-		event.preventDefault();
 		//console.log("Ring changed");
 		GAME.ringSelected++; // player chose a different ring to rotate.
 		if(GAME.ringSelected > GAME.RINGMAX) GAME.ringSelected = 1;
 		GAME.changeRingColors();
+	} else {
+		GAME.mouseX = event.touches[ 0 ].pageX;
+		GAME.timeoutID = window.setInterval(function() {
+			GAME.onDocumentTouchMove();
+		}, 50);
 	}
+};
+GAME.onDocumentTouchEnd = function( event )
+{
+	window.clearInterval(GAME.timeoutID);
+};
+GAME.onDocumentTouchMove = function()
+{
+	var posOrNeg = (GAME.mouseX > (window.innerWidth / 2)) ? 1 : -1;
+	GAME.criticalVariables[0].rotation.y += (0.2 * posOrNeg); // player center.
+	GAME.criticalVariables[GAME.ringSelected].rotation.y += ((0.2 * posOrNeg) / GAME.ringSelected); // defensive ring.
 };
 GAME.changeRingColors = function() {
 	for(var i = 1; i < GAME.criticalVariables.length; i++)
@@ -361,19 +376,6 @@ GAME.changeRingColors = function() {
 		GAME.criticalVariables[i].children[0].material.color.setHex(0xFF69B4);
 	}
 	GAME.criticalVariables[GAME.ringSelected].children[0].material.color.setHex(0x00FFFF);
-};
-GAME.onDocumentTouchMove = function( event )
-{
-	//console.log("Touch move");
-	var mouseXBefore = GAME.mouseX;
-	if ( event.touches.length === 1 )
-	{
-		event.preventDefault();
-		GAME.mouseX = event.touches[ 0 ].pageX;
-		var posOrNeg = (GAME.mouseX > mouseXBefore) ? 1 : -1;
-		GAME.criticalVariables[0].rotation.y += (0.05 * posOrNeg); // player center.
-		GAME.criticalVariables[GAME.ringSelected].rotation.y += ((0.05 * posOrNeg) / GAME.ringSelected); // defensive ring.
-	}
 };
 GAME.collisionCheck = function()
 {
