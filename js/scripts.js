@@ -293,13 +293,16 @@ GAME.loadSounds = function()
 };
 GAME.playSound = function(track)
 {
-	GAME.soundFx_1.pause();
-	GAME.soundFx_1.currentTime = 0;
-	GAME.soundFx_2.pause();
-	GAME.soundFx_2.currentTime = 0;
-	if(track === 0) GAME.soundFx_2.play();
-	else if(track === 1) GAME.soundFx_1.play();
-	else if(track === 2) GAME.soundFx_3.play();
+	GAME.isMute = true;
+	if(!GAME.isMute) {
+		GAME.soundFx_1.pause();
+		GAME.soundFx_1.currentTime = 0;
+		GAME.soundFx_2.pause();
+		GAME.soundFx_2.currentTime = 0;
+		if(track === 0) GAME.soundFx_2.play();
+		else if(track === 1) GAME.soundFx_1.play();
+		else if(track === 2) GAME.soundFx_3.play();
+	}
 };
 GAME.onDocumentMouseDown = function( event )
 {
