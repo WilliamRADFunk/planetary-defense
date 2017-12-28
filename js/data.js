@@ -16,6 +16,7 @@ function sendScore(initials, score)
         data: JSON.stringify(scorePackage),
         contentType:'application/x-www-form-urlencoded; charset=utf-8',
         dataType:'text',
+        crossDomain: true,
         async: true,
         success:function()
         {
@@ -38,6 +39,7 @@ function getScores()
         type:'GET',
         url:'https://tenaciousteal.com/games/planetary-defense/actions/getScores.php',
         dataType:'json',
+        crossDomain: true,
         async: true,
         success:function(responseData) {
             console.log("Success");

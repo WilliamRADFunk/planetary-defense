@@ -237,6 +237,8 @@ GAME.populateTopTen = function(scores)
 		document.getElementById("score4").innerHTML = scores.scores[3].score;
 		document.getElementById("name5").innerHTML = scores.scores[4].initials;
 		document.getElementById("score5").innerHTML = scores.scores[4].score;
+		document.getElementById("name6").innerHTML = scores.scores[4].initials;
+		document.getElementById("score6").innerHTML = scores.scores[4].score;
 	}
 	else
 	{
@@ -250,6 +252,8 @@ GAME.populateTopTen = function(scores)
 		document.getElementById("score4").innerHTML = "000";
 		document.getElementById("name5").innerHTML = "XXX";
 		document.getElementById("score5").innerHTML = "000";
+		document.getElementById("name6").innerHTML = "XXX";
+		document.getElementById("score6").innerHTML = "000";
 	}
 };
 GAME.createRenderers = function()
