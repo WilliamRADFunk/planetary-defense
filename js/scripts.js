@@ -382,7 +382,7 @@ GAME.loadSounds = function()
 };
 GAME.playSound = function(track)
 {
-	GAME.isMute = true;
+	GAME.isMute = false;
 	if(!GAME.isMute) {
 		GAME.soundFx_1.pause();
 		GAME.soundFx_1.currentTime = 0;
