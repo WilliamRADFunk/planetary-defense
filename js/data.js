@@ -12,7 +12,7 @@ function sendScore(initials, score)
 
     $.ajax({
         type:'POST',
-        url:'http://www.williamrobertfunk.com/applications/planetary-defense/actions/insert.php',
+        url:'https://tenaciousteal.com/games/planetary-defense/actions/insert.php',
         data: JSON.stringify(scorePackage),
         contentType:'application/x-www-form-urlencoded; charset=utf-8',
         dataType:'text',
@@ -36,7 +36,7 @@ function getScores()
     var scores = [];
     $.ajax({
         type:'GET',
-        url:'http://www.williamrobertfunk.com/applications/planetary-defense/actions/getScores.php',
+        url:'https://tenaciousteal.com/games/planetary-defense/actions/getScores.php',
         dataType:'json',
         async: true,
         success:function(responseData) {
