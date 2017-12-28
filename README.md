@@ -1,9 +1,13 @@
 # planetary-defense
 A small game, just for fun.</br></br>
 
-Left and right arrow keys, or A and D keys, will rotate chosen ring clockwise and counterclockwise, respectively.</br></br>
+Left and right arrow keys, or A and D keys, will rotate chosen ring counterclockwise and clockwise, respectively.</br></br>
+
+Touching screen with one finger on left and right arrow keys, will rotate chosen ring counterclockwise and clockwise, respectively.</br></br>
 
 Spacebar key will change active ring starting at inner-most ring, and working outward until starting back at inner-most ring.</br></br>
+
+Touching screen with two fingers will change active ring starting at inner-most ring, and working outward until starting back at inner-most ring.</br></br>
 
 Barriers are meant to block asteroids, and keep the center sphere (player) safe.</br></br>
 
