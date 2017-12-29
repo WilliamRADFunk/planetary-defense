@@ -3,6 +3,12 @@ header("content-type:application/json");
 header("Access-Control-Allow-Origin: *");
 include_once "config.php";
 
+/* 
+Planetary Defense Engine v1.0.0
+Last Updated: 2017-December-28
+Author: William R.A.D. Funk - http://WilliamRobertFunk.com 
+*/
+
 $input = file_get_contents('php://input');
 $object = json_encode($input, JSON_FORCE_OBJECT);
 

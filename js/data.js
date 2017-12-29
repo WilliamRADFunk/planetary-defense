@@ -1,3 +1,9 @@
+/* 
+Planetary Defense Engine v1.0.0
+Last Updated: 2017-December-28
+Author: William R.A.D. Funk - http://WilliamRobertFunk.com 
+*/
+
 /* Inserts the new score, identified by the user's initials (arcade-style) */
 function sendScore(initials, score)
 {
